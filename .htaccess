@@ -1,0 +1,12 @@
+RewriteEngine on
+
+# Redirect Trailing Slashes If Not A Folder...
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} (.+)/$
+RewriteRule ^ %1 [L,R=301]
+
+# ALLOW CRON.PHP ACCESS: Exclude cron.php from public redirection so it can be triggered via URL
+RewriteCond %{REQUEST_URI} !^cron\.php$
+RewriteCond %{REQUEST_URI} !^public
+
+RewriteRule ^(.*)$ public/$1 [L]

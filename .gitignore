@@ -1,0 +1,48 @@
+# General
+.DS_Store
+Thumbs.db
+*.log
+.env
+.env.backup
+.env.production
+
+# IDEs and editors
+.idea/
+.nova/
+.vscode/
+.gemini/
+.agent/
+.fleet/
+.zed/
+.phpactor.json
+
+# Laravel
+/public/hot
+/public/build
+/storage/*.key
+/storage/pail
+auth.json
+/.phpunit.cache
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+
+# Dependencies
+/node_modules
+/vendor
+
+# Testing
+/tests
+
+# Git
+.git
+
+# Public
+/public
+public
+
+# Excel Temporary Files
+~$*
+
+# from .ftpignore
+storage
