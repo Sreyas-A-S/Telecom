@@ -545,43 +545,14 @@ class EmployeeController extends Controller
     {
         $query = Employee::query()->with('dealership');
 
-        /** @var \App\Models\User|null $user */
-        $user = Auth::user();
-        $userIsEmployee = ($user && $user->user_type === 'employee');
-        $userDealershipId = null;
-
-        if ($userIsEmployee) {
-            $user->load('employee');
-            if ($user->employee && $user->employee->dealership_id !== null) {
-                $userDealershipId = $user->employee->dealership_id;
-            }
-        }
-
-        // Prioritize dealership_id from the request (from the lead)
-        if ($request->filled('dealership_id')) {
-            $query->where('dealership_id', $request->input('dealership_id'));
-        } elseif ($userIsEmployee && $userDealershipId !== null) {
-            // If no dealership_id from request, but user is an employee with a dealership, filter by user's dealership
-            $query->where('dealership_id', $userDealershipId);
-        } else if ($userIsEmployee && $userDealershipId === null) {
-            // If an employee has no dealership, they should see all employees (no dealership filter applied)
-            // No additional where clause needed here
-        } else {
-            // If the user is not an employee (e.g., admin), they should see all employees
-            // No additional where clause needed here
-        }
+        // Filter by 'Employee' role as per RoleSeeder
+        $query->whereHas('role', function ($q) {
+            $q->where('role', 'Employee');
+        });
 
         $employees = $query->get();
 
         if ($employees->isEmpty()) {
-            // If the user is an employee with a dealership and no employees are found for that dealership
-            if ($userIsEmployee && $userDealershipId !== null) {
-                return response()->json(['data' => [], 'message' => 'No assignable employees found for your dealership.']);
-            } else if ($userIsEmployee && $userDealershipId === null) {
-                // If an employee has no dealership and no employees are found (e.g., no employees in system)
-                return response()->json(['data' => [], 'message' => 'No assignable employees found.']);
-            }
-            // For non-employees or other cases where no employees are found
             return response()->json(['data' => [], 'message' => 'No assignable employees found.']);
         }
 

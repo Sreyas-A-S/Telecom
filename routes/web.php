@@ -60,6 +60,7 @@ use App\Http\Controllers\GeneralReportController;
 use App\Http\Controllers\JobVacancyController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\CallController;
 
 
 Route::get('/', function () {
@@ -542,6 +543,13 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/update-setting', [BrandSettingController::class, 'updateSetting'])->name('web.brand-settings.update-setting');
     Route::get('/brand-settings/{dealership_id}/settings', [BrandSettingController::class, 'getDealershipSettings'])->name('web.brand-settings.get-settings');
+
+    // Call Centre Routes
+    Route::post('/calls/toggle-availability', [CallController::class, 'toggleAvailability'])->name('calls.toggle-availability');
+    Route::get('/calls/agent-status', [CallController::class, 'getAgentStatus'])->name('calls.agent-status');
+    Route::post('/calls/initiate-mock', [CallController::class, 'initiateIncomingCall'])->name('calls.initiate-mock');
+    Route::post('/calls/{call}/answer', [CallController::class, 'answerCall'])->name('calls.answer');
+    Route::post('/calls/{call}/end', [CallController::class, 'endCall'])->name('calls.end');
 });
 
 // Terminal (Protected by static password in controller)

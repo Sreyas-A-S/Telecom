@@ -58,6 +58,8 @@ class EmployeeFactory extends Factory
             'aadhar_no' => $this->faker->numerify('############'),
             'pan_no' => $this->faker->bothify('?????####?'),
             'branch' => $this->faker->city,
+            'designation' => 'Employee',
+            'role_id' => 1, // Default to 'Employee' role
         ];
     }
 }
