@@ -449,7 +449,6 @@
                                         <tr>
                                             <th>Sl No</th>
                                             <th>Name & Contact</th>
-                                            <th>Agent & Source</th>
                                             <th>Product & Value</th>
                                             <th>Category & Dealership</th>
                                             <th>Latest Follow Up</th>
@@ -538,7 +537,6 @@
                                     <tr>
                                         <th>Sl No</th>
                                         <th>Name & Contact</th>
-                                        <th>Agent & Source</th>
                                         <th>Product & Value</th>
                                         <th>Category & Dealership</th>
                                         <th>Status</th>
@@ -1504,27 +1502,7 @@
                                 '</div>' + company + email + phone + clientBadge;
                         }
                     },
-                    {
-                        data: 'agent_data', // Changed from 'agent' to 'agent_data'
-                        name: 'agent_data', // Changed from 'agent' to 'agent_data'
-                        className: 'td-agent-source',
-                        orderable: false, // Set to false
-                        render: function(data, type, row) {
-                            // 'data' now refers to the object returned by the backend's addColumn('agent_data', ...)
-                            var agentName = data.agent_name || 'N/A';
-                            var leadSource = data.leadSource; // The full leadSource object
 
-                            var profilePic = data.agent_profile_pic ? '/storage/' +
-                                data.agent_profile_pic :
-                                "{{ asset('admin/assets/images/avtar/4.jpg') }}";
-                            var sourceName = leadSource ?
-                                '<div class="text-muted fw-bold">' +
-                                leadSource.name + '</div>' : '';
-                            return '<span class="d-flex align-items-center"><img src="' +
-                                profilePic +
-                                '" class="rounded-circle me-2" width="24" height="24" style="object-fit: cover;">' +
-                                agentName + '</span>' + sourceName;
-                        }                    },
                     {
                         data: 'product',
                         name: 'product',
@@ -1837,27 +1815,7 @@
                                 '</div>' + email + phone + clientBadge;
                         }
                     },
-                    {
-                        data: 'agent_data', // Changed from 'agent' to 'agent_data'
-                        name: 'agent_data', // Changed from 'agent' to 'agent_data'
-                        className: 'td-agent-source',
-                        orderable: false, // Set to false
-                        render: function(data, type, row) {
-                            // 'data' now refers to the object returned by the backend's addColumn('agent_data', ...)
-                            var agentName = data.agent_name || 'N/A';
-                            var leadSource = data.leadSource; // The full leadSource object
 
-                            var profilePic = data.agent_profile_pic ? '/storage/' +
-                                data.agent_profile_pic :
-                                "{{ asset('admin/assets/images/avtar/4.jpg') }}";
-                            var sourceName = leadSource ?
-                                '<div class="text-muted fw-bold">' +
-                                leadSource.name + '</div>' : '';
-                            return '<span class="d-flex align-items-center"><img src="' +
-                                profilePic +
-                                '" class="rounded-circle me-2" width="24" height="24" style="object-fit: cover;">' +
-                                agentName + '</span>' + sourceName;
-                        }                    },
                     {
                         data: 'product',
                         name: 'product',

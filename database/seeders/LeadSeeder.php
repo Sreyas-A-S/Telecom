@@ -38,7 +38,7 @@ class LeadSeeder extends Seeder
             'billing' => $faker->dateTimeBetween('-1 year', '+1 year')->format('Y-m-d'),
             'remarks' => $faker->paragraph(),
             'product_id' => function () use ($productIds) {
-                return $productIds[array_rand($productIds)];
+                return !empty($productIds) ? $productIds[array_rand($productIds)] : null;
             },
             'product_model_id' => function (array $attributes) {
                 $productModels = ProductModel::where('product_id', $attributes['product_id'])->pluck('id')->toArray();

@@ -29,56 +29,7 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
         $userDealershipId = $this->getFilteredDealershipId($request);
-        $userDepartment = $user->employee->department->name ?? null; // Assuming user has employee and employee has department
-
-        $allDealerships = Dealership::all(); // Fetch all dealerships
-
-        $dealershipsAnalytics = [];
-
-        // If no specific dealership is selected (General View), gather analytics for ALL dealerships
-        if (!$userDealershipId) {
-            foreach ($allDealerships as $dealership) {
-                if ($dealership->brand != 1) continue; // Optional: specific logic if needed, but sidebar uses brand=1 filter. Assuming we only want those.
-
-                $did = $dealership->id;
-
-                // Sales Stats
-                $salesStats = [
-                    'total_leads' => Lead::where('dealership_id', $did)->count(),
-                    'in_progress_leads' => Lead::where('dealership_id', $did)->where('status', 'in_progress')->count(),
-                    'converted_leads' => Lead::where('dealership_id', $did)->where('status', 'converted')->count(),
-                    'lost_leads' => Lead::where('dealership_id', $did)->where('status', 'lost')->count(),
-                ];
-
-                // Service Stats
-                $serviceQuery = Service::where('dealership_id', $did);
-                $serviceStats = [
-                    'total_services' => $serviceQuery->count(),
-                    'service_engineers' => Employee::where('dealership_id', $did)->whereHas('tasks')->count(),
-                    'clients_on_services' => (clone $serviceQuery)->distinct()->count('client_id'),
-                    'products_on_services' => (clone $serviceQuery)->distinct()->count('product_id'),
-                ];
-
-                // Parts Stats
-                $partsStats = [
-                    'total_parts' => Part::where('dealership_id', $did)->count(),
-                    'total_package_kits' => PackageKit::where('dealership_id', $did)->count(),
-                    'products_with_parts' => Product::whereHas('parts', function ($q) use ($did) {
-                        $q->where('dealership_id', $did);
-                    })->count(),
-                    'model_series_with_parts' => ModelSeries::whereHas('parts', function ($q) use ($did) {
-                        $q->where('dealership_id', $did);
-                    })->count(),
-                ];
-
-                $dealershipsAnalytics[] = [
-                    'dealership' => $dealership,
-                    'sales' => $salesStats,
-                    'service' => $serviceStats,
-                    'parts' => $partsStats,
-                ];
-            }
-        }
+        $userDepartment = $user->employee->department->name ?? null;
 
         $totalLeads = Lead::when($userDealershipId, function ($query) use ($userDealershipId) {
             return $query->where('dealership_id', $userDealershipId);
@@ -104,11 +55,10 @@ class DashboardController extends Controller
         }
 
         $totalServices = $serviceBaseQuery->count();
-        $totalServiceEngineers = Employee::whereHas('tasks')->count(); // This might need dealership filter too if tasks are dealership specific
+        $totalServiceEngineers = Employee::whereHas('tasks')->count();
         $totalClientsOnServices = (clone $serviceBaseQuery)->distinct()->count('client_id');
         $totalProductsOnServices = (clone $serviceBaseQuery)->distinct()->count('product_id');
 
-        // Apply dealership filter for service engineers if needed
         if ($userDealershipId) {
             $totalServiceEngineers = Employee::where('dealership_id', $userDealershipId)->whereHas('tasks')->count();
         }
@@ -177,11 +127,6 @@ class DashboardController extends Controller
 
         // General Analytics for All Users
         $employeeId = $user->employee ? $user->employee->id : null;
-        \Illuminate\Support\Facades\Log::info('Dashboard Analytics Debug:', [
-            'user_id' => $user->id,
-            'employee_id' => $employeeId,
-            'user_type' => $user->user_type,
-        ]);
         $myTotalTasks = 0;
         $myPendingTasks = 0;
         $myCompletedTasks = 0;
@@ -197,20 +142,19 @@ class DashboardController extends Controller
                 ->whereYear('clock_in_time', Carbon::now()->year)
                 ->count();
 
-            // Chart 1: My Task Status
+            // My Task Charts
             $myTaskStatusCounts = Task::where('assigned_to', $employeeId)
                 ->select('status', DB::raw('count(*) as total'))
                 ->groupBy('status')
                 ->pluck('total', 'status')
                 ->toArray();
 
-            // Chart 2: My Weekly Attendance (Last 7 Days)
             $myWeeklyAttendance = [];
             $myWeeklyAttendanceLabels = [];
             for ($i = 6; $i >= 0; $i--) {
                 $date = Carbon::now()->subDays($i);
                 $dateStr = $date->format('Y-m-d');
-                $myWeeklyAttendanceLabels[] = $date->format('D'); // Mon, Tue, etc.
+                $myWeeklyAttendanceLabels[] = $date->format('D');
 
                 $clock = Clock::where('employee_id', $employeeId)
                     ->whereDate('clock_in_time', $dateStr)
@@ -222,14 +166,12 @@ class DashboardController extends Controller
                     $end = Carbon::parse($clock->clock_out_time);
                     $hours = $end->diffInMinutes($start) / 60;
                 } elseif ($clock && !$clock->clock_out_time) {
-                    // If currently clocked in, calculate until now (optional, or just 0)
                     $start = Carbon::parse($clock->clock_in_time);
                     $hours = Carbon::now()->diffInMinutes($start) / 60;
                 }
                 $myWeeklyAttendance[] = round($hours, 1);
             }
 
-            // Chart 3: My Monthly Task Completion (Last 6 Months)
             $myMonthlyCompletionData = [];
             $myMonthlyCompletionLabels = [];
             for ($i = 5; $i >= 0; $i--) {
@@ -246,7 +188,6 @@ class DashboardController extends Controller
                 $myMonthlyCompletionData[] = $count;
             }
 
-            // Chart 4: My Task Types
             $myTaskTypeCounts = Task::where('assigned_to', $employeeId)
                 ->select('type', DB::raw('count(*) as total'))
                 ->groupBy('type')
@@ -261,7 +202,7 @@ class DashboardController extends Controller
             $myTaskTypeCounts = [];
         }
 
-        return view('dashboard', compact('userDealershipId', 'allDealerships', 'totalLeads', 'totalAgents', 'totalEmployees', 'totalClients', 'userDepartment', 'totalServices', 'totalServiceEngineers', 'totalClientsOnServices', 'totalProductsOnServices', 'totalParts', 'totalPackageKits', 'totalProductsWithParts', 'totalModelSeriesWithParts', 'topSellingParts', 'topPackageKits', 'partsSalesData', 'partsSalesLabels', 'stockStatusCounts', 'myTotalTasks', 'myPendingTasks', 'myCompletedTasks', 'myAttendanceCount', 'myTaskStatusCounts', 'myWeeklyAttendance', 'myWeeklyAttendanceLabels', 'myMonthlyCompletionData', 'myMonthlyCompletionLabels', 'myTaskTypeCounts', 'dealershipsAnalytics'));
+        return view('dashboard', compact('userDealershipId', 'totalLeads', 'totalAgents', 'totalEmployees', 'totalClients', 'userDepartment', 'totalServices', 'totalServiceEngineers', 'totalClientsOnServices', 'totalProductsOnServices', 'totalParts', 'totalPackageKits', 'totalProductsWithParts', 'totalModelSeriesWithParts', 'topSellingParts', 'topPackageKits', 'partsSalesData', 'partsSalesLabels', 'stockStatusCounts', 'myTotalTasks', 'myPendingTasks', 'myCompletedTasks', 'myAttendanceCount', 'myTaskStatusCounts', 'myWeeklyAttendance', 'myWeeklyAttendanceLabels', 'myMonthlyCompletionData', 'myMonthlyCompletionLabels', 'myTaskTypeCounts'));
     }
 
     public function topContributors(Request $request)

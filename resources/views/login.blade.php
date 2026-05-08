@@ -101,7 +101,7 @@
       <div class="col-xl-5"><img class="bg-img-cover bg-center"
           src="{{ asset('admin/assets/images/login/logi-bg.webp') }}" alt="looginpage"></div>
       <div class="col-xl-7 p-0">
-        <div class="login-card login-dark">
+        <div class="login-card">
           <div class="mb-4">
             <div class="logo-carousel-container">
               <div class="logo-carousel-track">
@@ -120,13 +120,13 @@
                 <h4 class="mb-2">Sign in to account</h4>
                 {{-- <p>Enter your email & password to login</p> --}}
                 <div class="form-group">
-                  <label class="col-form-label">Email Address</label>
-                  <input class="form-control" type="email" name="email" required="" placeholder="Test@gmail.com">
+                  <label class="col-form-label" for="email">Email Address</label>
+                  <input class="form-control" type="email" name="email" id="email" required placeholder="Test@gmail.com" autocomplete="email" autofocus>
                 </div>
                 <div class="form-group">
-                  <label class="col-form-label">Password</label>
+                  <label class="col-form-label" for="password">Password</label>
                   <div class="form-input position-relative">
-                    <input class="form-control" type="password" name="password" required="" placeholder="*********">
+                    <input class="form-control" type="password" name="password" id="password" required placeholder="*********" autocomplete="current-password">
                     <div class="show-hide"><span class="show"></span></div>
                   </div>
                 </div>

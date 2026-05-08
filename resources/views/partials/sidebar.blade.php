@@ -26,64 +26,28 @@
                         <h6 class="lan-1">General</h6>
                     </div>
                 </li>
-                @php
-                $sidebarDealerships = \App\Models\Dealership::all();
-                $userDealership = auth()->user()->employee->dealership ?? null;
-                $canViewAllDashboards = !$userDealership && (checkMenu(Session::get('role_id'), 1, 'read') || auth()->user()->user_type === 'admin');
-                $currentUrl = request()->fullUrl();
-                $currentDealershipId = request()->query('dealership_id');
-                $isGeneralDashboard = request()->routeIs('dashboard') && !$currentDealershipId;
-                @endphp
+                
+                <li class="sidebar-list"><i class="fa fa-thumb-tack"></i><a class="sidebar-link sidebar-title link-nav"
+                        href="{{ route('dashboard') }}">
+                        <svg class="stroke-icon">
+                            <use href="{{ asset('admin/assets/svg/icon-sprite.svg#stroke-home') }}"></use>
+                        </svg>
+                        <svg class="fill-icon">
+                            <use href="{{ asset("admin/assets/svg/icon-sprite.svg#stroke-user") }}"></use>
+                        </svg><span>Dashboard</span>
+                        <div class="according-menu"><i class="fa fa-angle-right"></i></div>
+                    </a></li>
 
-                @if($canViewAllDashboards)
-                <li class="sidebar-list"><i class="fa fa-thumb-tack"></i><a class="sidebar-link sidebar-title" href="#">
-                        <svg class="stroke-icon">
-                            <use href="{{ asset('admin/assets/svg/icon-sprite.svg#stroke-home') }}"></use>
-                        </svg>
-                        <svg class="fill-icon">
-                            <use href="{{ asset("admin/assets/svg/icon-sprite.svg#stroke-user") }}"></use>
-                        </svg><span>Dashboard</span>
-                        <div class="according-menu"><i class="fa fa-angle-right"></i></div>
-                    </a>
-                    <ul class="sidebar-submenu">
-                        <li class="{{ $isGeneralDashboard ? 'active' : '' }}">
-                            <a href="{{ route('dashboard') }}" class="{{ $isGeneralDashboard ? 'active' : '' }}">General Dashboard</a>
-                        </li>
-                        @foreach($sidebarDealerships as $dealer)
-                        @if($dealer->brand == 1)
-                        @php
-                        $dealerUrl = route('dashboard', ['dealership_id' => $dealer->id]);
-                        $isDealerActive = $currentDealershipId == $dealer->id;
-                        @endphp
-                        <li class="{{ $isDealerActive ? 'active' : '' }}">
-                            <a href="{{ $dealerUrl }}" class="{{ $isDealerActive ? 'active' : '' }}">{{ $dealer->name }}</a>
-                        </li>
-                        @endif
-                        @endforeach
-                    </ul>
-                </li>
-                @elseif($userDealership)
+                @if(checkMenu(Session::get('role_id'), 12, 'read'))
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i><a class="sidebar-link sidebar-title link-nav"
-                        href="{{ route('dashboard') }}">
+                        href="{{ route('leads.index') }}">
                         <svg class="stroke-icon">
-                            <use href="{{ asset('admin/assets/svg/icon-sprite.svg#stroke-home') }}"></use>
+                            <use href="{{ asset('admin/assets/svg/icon-sprite.svg#stroke-task') }}">
+                            </use>
                         </svg>
                         <svg class="fill-icon">
-                            <use href="{{ asset("admin/assets/svg/icon-sprite.svg#stroke-user") }}"></use>
-                        </svg><span>Dashboard</span>
-                        <div class="according-menu"><i class="fa fa-angle-right"></i></div>
-                    </a></li>
-                @else
-                <li class="sidebar-list"><i class="fa fa-thumb-tack"></i><a class="sidebar-link sidebar-title link-nav"
-                        href="{{ route('dashboard') }}">
-                        <svg class="stroke-icon">
-                            <use href="{{ asset('admin/assets/svg/icon-sprite.svg#stroke-home') }}"></use>
-                        </svg>
-                        <svg class="fill-icon">
-                            <use href="{{ asset("admin/assets/svg/icon-sprite.svg#stroke-user") }}"></use>
-                        </svg><span>Dashboard</span>
-                        <div class="according-menu"><i class="fa fa-angle-right"></i></div>
-                    </a></li>
+                            <use href="{{ asset('admin/assets/svg/icon-sprite.svg#fill-task') }}"></use>
+                        </svg><span>Leads</span></a></li>
                 @endif
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i><a class="sidebar-link sidebar-title link-nav"
@@ -127,6 +91,9 @@
                     </a></li>
                 @endif
 
+                {{-- Monitoring Section Hidden --}}
+                {{-- 
+                {{--
                 <li class="sidebar-main-title">
                     <div>
                         <h6 class="">Monitoring</h6>
@@ -176,7 +143,8 @@
                         <div class="according-menu"><i class="fa fa-angle-right"></i></div>
                     </a></li>
                 @endif
-
+                --}}
+                --}}
 
 
                 <li class="sidebar-main-title">
@@ -390,6 +358,9 @@
 
 
 
+                {{-- Parts Section Hidden --}}
+                {{-- 
+                {{--
                 @if(checkMenuGroup(Session::get('role_id'), 6))
                 <li class="sidebar-main-title">
                     <div>
@@ -423,6 +394,12 @@
                         <div class="according-menu"><i class="fa fa-angle-right"></i></div>
                     </a></li>
                 @endif
+                --}}
+                --}}
+
+                {{-- Service Section Hidden --}}
+                {{-- 
+                {{--
                 @if(checkMenuGroup(Session::get('role_id'), 5))
                 <li class="sidebar-main-title">
                     <div>
@@ -454,6 +431,9 @@
                         <div class="according-menu"><i class="fa fa-angle-right"></i></div>
                     </a></li>
                 @endif
+                --}}
+                --}}
+
                 @if(checkMenuGroup(Session::get('role_id'), 3))
                 <li class="sidebar-main-title">
                     <div>
@@ -461,17 +441,8 @@
                     </div>
                 </li>
 
-                @if(checkMenu(Session::get('role_id'), 12, 'read'))
-                <li class="sidebar-list"><i class="fa fa-thumb-tack"></i><a class="sidebar-link sidebar-title link-nav"
-                        href="{{ route('leads.index') }}">
-                        <svg class="stroke-icon">
-                            <use href="{{ asset('admin/assets/svg/icon-sprite.svg#stroke-task') }}">
-                            </use>
-                        </svg>
-                        <svg class="fill-icon">
-                            <use href="{{ asset('admin/assets/svg/icon-sprite.svg#fill-task') }}"></use>
-                        </svg><span>Leads</span></a></li>
-                @endif
+                {{-- Leads moved to General --}}
+                
                 @if(checkMenu(Session::get('role_id'), 6, 'read'))
                 <li id="sidebar-products" class="sidebar-list">
                     <i class="fa fa-thumb-tack"></i><a class="sidebar-link sidebar-title link-nav"
@@ -498,6 +469,10 @@
                         </svg><span>Product Settings</span></a>
                 </li>
                 @endif
+                
+                {{-- Lost Orders Hidden --}}
+                {{-- 
+                {{--
                 @if(checkMenu(Session::get('role_id'), 9, 'read'))
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i><a class="sidebar-link sidebar-title link-nav"
                         href="{{ route('loss-orders.index') }}">
@@ -510,6 +485,12 @@
 
 
                 @endif
+                --}}
+                --}}
+
+                {{-- Pipeline Hidden --}}
+                {{-- 
+                {{--
                 @if(checkMenu(Session::get('role_id'), 10, 'read'))
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i><a class="sidebar-link sidebar-title link-nav"
                         href="{{ route('pipelines.index') }}">
@@ -520,6 +501,8 @@
                             <use href="{{ asset('admin/assets/svg/icon-sprite.svg#fill-task') }}"></use>
                         </svg><span>Pipeline</span></a></li>
                 @endif
+                --}}
+                --}}
 
                 @endif
                 @if(checkMenuGroup(Session::get('role_id'), 4))

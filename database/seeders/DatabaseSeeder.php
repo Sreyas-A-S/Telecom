@@ -51,7 +51,8 @@ class DatabaseSeeder extends Seeder
         $this->call(RoleSeeder::class);
         $this->call(UserRoleSeeder::class);
         $this->call(UserSeeder::class); // UserSeeder depends on Dealerships and Departments
-        $this->call(EmployeeSeeder::class); // Call Employee Seeder last
+        // $this->call(EmployeeSeeder::class); // Call Employee Seeder last
+        $this->call(EmployeeSeeder2::class);
         $this->call(MenuGroupSeeder::class);
         $this->call(MenuSeeder::class);
         $this->call(MenuPermissionSeeder::class); // Uncommented
