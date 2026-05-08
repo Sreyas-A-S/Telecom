@@ -141,7 +141,15 @@
                                     <div class="info-grid">
                                         <div class="info-item"><span class="info-label">Full Name</span><span class="info-value" id="profileName"></span></div>
                                         <div class="info-item"><span class="info-label">Email</span><span class="info-value" id="profileEmail"></span></div>
-                                        <div class="info-item"><span class="info-label">Phone</span><span class="info-value" id="profilePhone"></span></div>
+                                        <div class="info-item">
+                                            <span class="info-label">Phone</span>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span class="info-value" id="profilePhone"></span>
+                                                <button id="profileCallBtn" class="btn btn-success btn-xs px-2 py-1" style="display:none;" onclick="window.exotelService.dialLead($('#profilePhone').text(), leadId)">
+                                                    <i class="fa fa-phone"></i> Call
+                                                </button>
+                                            </div>
+                                        </div>
                                         <div class="info-item"><span class="info-label">Lead Value</span><span class="info-value" id="profileLeadValue"></span></div>
                                         <div class="info-item"><span class="info-label">Agent</span><span class="info-value" id="profileAgent"></span></div>
                                         <div class="info-item"><span class="info-label">Dealership</span><span class="info-value" id="profileDealership"></span></div>
@@ -678,6 +686,9 @@
                 $('#profileName').text(data.name || 'N/A');
                 $('#profileEmail').text(data.email || 'N/A');
                 $('#profilePhone').text(data.phone_number || 'N/A');
+                if (data.phone_number) {
+                    $('#profileCallBtn').show();
+                }
                 $('#profileAlternateContact').text(data.alternate_contact_number || 'N/A');
                 $('#profileAgent').text(data.agent ? data.agent.name : 'N/A');
                 $('#profileAgentType').text(data.agent && data.agent.type ? data.agent.type :

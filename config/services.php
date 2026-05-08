@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    'exotel' => [
+        'api_key' => env('EXOTEL_API_KEY'),
+        'api_token' => env('EXOTEL_API_TOKEN'),
+        'subdomain' => env('EXOTEL_SUBDOMAIN'),
+        'app_id' => env('EXOTEL_APP_ID'),
+        'virtual_number' => env('EXOTEL_VIRTUAL_NUMBER'),
+    ],
+
 ];

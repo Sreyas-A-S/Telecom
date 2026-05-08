@@ -548,6 +548,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/calls/toggle-availability', [CallController::class, 'toggleAvailability'])->name('calls.toggle-availability');
     Route::get('/calls/agent-status', [CallController::class, 'getAgentStatus'])->name('calls.agent-status');
     Route::post('/calls/initiate-mock', [CallController::class, 'initiateIncomingCall'])->name('calls.initiate-mock');
+    Route::post('/calls/start-outbound', [CallController::class, 'startOutboundCall'])->name('calls.start-outbound');
     Route::post('/calls/{call}/answer', [CallController::class, 'answerCall'])->name('calls.answer');
     Route::post('/calls/{call}/end', [CallController::class, 'endCall'])->name('calls.end');
 });

@@ -33,13 +33,50 @@ class CallController extends Controller
 
     public function getAgentStatus()
     {
-        $user = Auth::user();
-        if (!$user->employee) {
-             return response()->json(['status' => 'offline']);
+        $employee = Auth::user()->employee;
+        if (!$employee) {
+            return response()->json(['error' => 'Employee record not found'], 404);
         }
 
-        $session = AgentSession::where('employee_id', $user->employee->id)->first();
-        return response()->json(['status' => $session ? $session->status : 'offline']);
+        $session = AgentSession::firstOrCreate(
+            ['employee_id' => $employee->id],
+            ['status' => 'offline']
+        );
+
+        return response()->json([
+            'status' => $session->status,
+            'exotel_config' => [
+                'apiKey' => config('services.exotel.api_key'),
+                'subdomain' => config('services.exotel.subdomain'),
+                'token' => $this->generateExotelToken($employee->employee_id),
+            ]
+        ]);
+    }
+
+    private function generateExotelToken($agentId)
+    {
+        $apiKey = config('services.exotel.api_key');
+        $apiToken = config('services.exotel.api_token');
+
+        if (!$apiKey || !$apiToken) {
+            return null;
+        }
+
+        $header = json_encode(['alg' => 'HS256', 'typ' => 'JWT']);
+        $payload = json_encode([
+            'iss' => $apiKey,
+            'iat' => time(),
+            'exp' => time() + 3600 * 8, // 8 hours
+            'sub' => $agentId
+        ]);
+
+        $base64UrlHeader = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($header));
+        $base64UrlPayload = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($payload));
+
+        $signature = hash_hmac('sha256', $base64UrlHeader . "." . $base64UrlPayload, $apiToken, true);
+        $base64UrlSignature = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($signature));
+
+        return $base64UrlHeader . "." . $base64UrlPayload . "." . $base64UrlSignature;
     }
 
     public function initiateIncomingCall(Request $request)
@@ -89,6 +126,31 @@ class CallController extends Controller
         return response()->json([
             'message' => 'Call ended',
             'call' => $call
+        ]);
+    }
+
+    public function startOutboundCall(Request $request)
+    {
+        $request->validate([
+            'phone_number' => 'required|string',
+            'lead_id' => 'nullable|exists:leads,id'
+        ]);
+
+        $user = Auth::user();
+        
+        // Log the outbound call attempt
+        $call = Call::create([
+            'caller_user_id' => $user->id,
+            'external_number' => $request->phone_number,
+            'lead_id' => $request->lead_id,
+            'direction' => 'outbound',
+            'status' => 'active', // Will be updated by Exotel events
+            'start_time' => now(),
+        ]);
+
+        return response()->json([
+            'message' => 'Call initiated',
+            'call_id' => $call->id
         ]);
     }
 }

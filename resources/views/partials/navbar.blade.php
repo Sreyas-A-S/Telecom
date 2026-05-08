@@ -63,6 +63,17 @@
                         <span id="timer-display">00:00:00</span>
                     </div>
                 </li>
+                <!-- Call Centre Status -->
+                <li class="onhover-dropdown">
+                    <div class="d-flex align-items-center gap-2" style="cursor: pointer;">
+                        <span id="agent-status-dot" class="rounded-circle bg-secondary" style="width: 10px; height: 10px; display: inline-block;"></span>
+                        <span id="agent-status-text" class="f-w-600 f-12">Offline</span>
+                    </div>
+                    <div class="onhover-show-div p-3" style="width: 200px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+                        <h6 class="f-w-700 mb-3">Call Centre Status</h6>
+                        <button id="availability-toggle-btn" class="btn btn-outline-success btn-sm w-100" onclick="window.exotelService.toggleAvailability()">Go Online</button>
+                    </div>
+                </li>
                 <!-- <li class="onhover-dropdown">
                 <svg>
                   <use href="{{ asset('admin/assets/svg/icon-sprite.svg#star') }}"></use>
@@ -491,3 +502,69 @@
     })(jQuery); // Invoke with jQuery
 </script>
 @endpush
+
+<!-- Exotel Ringing Modal -->
+<div class="modal fade" id="exotel-ringing-modal" data-bs-backdrop="static" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; background: linear-gradient(135deg, #7366ff 0%, #a066ff 100%);">
+            <div class="modal-body text-center p-5 text-white">
+                <div class="ringing-animation mb-4">
+                    <i class="fa fa-phone fa-4x mb-3 animate-ringing"></i>
+                </div>
+                <h3 class="f-w-700 mb-2">Incoming Call</h3>
+                <p class="f-20 mb-4" id="caller-number">Unknown Number</p>
+                
+                <div class="d-flex justify-content-center gap-4">
+                    <button class="btn btn-success btn-lg rounded-circle p-4" onclick="window.exotelService.answerCall()">
+                        <i class="fa fa-phone fa-2x"></i>
+                    </button>
+                    <button class="btn btn-danger btn-lg rounded-circle p-4" onclick="window.exotelService.endCall()">
+                        <i class="fa fa-phone fa-rotate-135 fa-2x"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Active Call Bar -->
+<div id="exotel-active-call-bar" style="display: none; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 10000;">
+    <div class="d-flex align-items-center gap-4 bg-dark text-white px-4 py-3 rounded-pill shadow-lg border border-secondary">
+        <div class="d-flex align-items-center gap-2">
+            <span class="rounded-circle bg-success pulse-animation" style="width: 10px; height: 10px;"></span>
+            <span class="f-w-600">On Call: <span id="active-call-number">...</span></span>
+        </div>
+        <div class="divider bg-secondary" style="width: 1px; height: 20px;"></div>
+        <button class="btn btn-danger btn-xs rounded-pill px-3" onclick="window.exotelService.endCall()">
+            <i class="fa fa-phone fa-rotate-135 me-2"></i> End Call
+        </button>
+    </div>
+</div>
+
+<style>
+    .animate-ringing {
+        animation: ringing 1s infinite;
+    }
+    @keyframes ringing {
+        0% { transform: rotate(0) scale(1); }
+        15% { transform: rotate(15deg) scale(1.1); }
+        30% { transform: rotate(-15deg) scale(1.1); }
+        45% { transform: rotate(10deg) scale(1.1); }
+        60% { transform: rotate(-10deg) scale(1.1); }
+        75% { transform: rotate(5deg) scale(1.1); }
+        85% { transform: rotate(-5deg) scale(1.1); }
+        100% { transform: rotate(0) scale(1); }
+    }
+    .pulse-animation {
+        animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(81, 187, 37, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(81, 187, 37, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(81, 187, 37, 0); }
+    }
+</style>
+
+@push('scripts')
+<script src="https://standard-dist.exotel.com/sdk/webrtc/v1.0.0/exotel-webrtc.js"></script>
+<script src="{{ asset('admin/assets/js/exotel-service.js') }}"></script>

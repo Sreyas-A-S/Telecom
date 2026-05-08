@@ -214,7 +214,7 @@ class LeadController extends Controller
                         return $row->employee;
                     }
                     return 'N/A';
-                })->rawColumns(['assigned_employee'])
+                })->rawColumns(['assigned_employee', 'action'])
 
                 ->addColumn('chance_of_success', function ($row) {
                     return (int)($row->chance_of_success ?? 0);
@@ -224,6 +224,7 @@ class LeadController extends Controller
                 })
                 ->addColumn('action', function ($row) {
                     $btn = '<ul class="action d-flex justify-content-around list-unstyled gap-2">';
+                    $btn .= '<li class="call"><a href="javascript:void(0)" title="Call Lead" onclick="window.exotelService.dialLead(\'' . $row->phone_number . '\', ' . $row->id . ')"><i class="icon-headphone" style="color: #51bb25;"></i></a></li>';
                     $btn .= '<li class="view"><a title="View" href="/leads/' . $row->id . '/profile"><i class="icon-eye"></i></a></li>';
                     $btn .= '<li class="edit"><a href="javascript:void(0)" title="Edit" data-id="' . $row->id . '" class="edit-lead-btn"><i class="icon-pencil-alt"></i></a></li>';
                     $btn .= '<li class="delete"><a title="Delete" href="javascript:void(0)" data-id="' . $row->id . '" data-lead-name="' . $row->name . '" class="delete-lead-btn"><i class="icon-trash"></i></a></li>';
