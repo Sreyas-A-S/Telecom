@@ -69,18 +69,15 @@ class CallController extends Controller
             return null;
         }
 
+        $iat = time();
+        $exp = $iat + 3600;
         $header = json_encode(['alg' => 'HS256', 'typ' => 'JWT']);
         $payload = json_encode([
             'iss' => $apiKey,
-            'iat' => time(),
-            'exp' => time() + 3600, // 1 hour
-            'sub' => "sip:{$agentId}@" . config('services.exotel.subdomain', 'api.exotel.com'),
-            'aud' => config('services.exotel.subdomain', 'api.exotel.com'),
+            'iat' => $iat,
+            'exp' => $exp,
+            'sub' => (string) $agentId,
             'app_id' => config('services.exotel.app_id'),
-            'account_sid' => config('services.exotel.account_sid', 'exotelt1'),
-            'grants' => [
-                'rtc' => true
-            ]
         ]);
 
         $base64UrlHeader = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($header));
