@@ -27,6 +27,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
+
+        if (str_contains(url()->current(), 'ngrok-free.app')) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
+
         Relation::morphMap([
             'Employee' => 'App\\Models\\Employee',
             'Agent' => 'App\\Models\\Agent',

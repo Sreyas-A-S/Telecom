@@ -67,7 +67,8 @@
                 <li class="onhover-dropdown">
                     <div class="d-flex align-items-center gap-2" style="cursor: pointer;">
                         <span id="agent-status-dot" class="rounded-circle bg-secondary" style="width: 10px; height: 10px; display: inline-block;"></span>
-                        <span id="agent-status-text" class="f-w-600 f-12">Offline</span>
+                        <div id="agent-status-loader" class="spinner-border spinner-border-sm text-primary" role="status" style="display: none; width: 12px; height: 12px;"></div>
+                        <span id="agent-status-text" class="f-w-600 f-12 text-muted">Checking...</span>
                     </div>
                     <div class="onhover-show-div p-3" style="width: 200px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
                         <h6 class="f-w-700 mb-3">Call Centre Status</h6>
@@ -501,7 +502,6 @@
         });
     })(jQuery); // Invoke with jQuery
 </script>
-@endpush
 
 <!-- Exotel Ringing Modal -->
 <div class="modal fade" id="exotel-ringing-modal" data-bs-backdrop="static" tabindex="-1">
@@ -564,7 +564,54 @@
         100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(81, 187, 37, 0); }
     }
 </style>
-
-@push('scripts')
-<script src="https://standard-dist.exotel.com/sdk/webrtc/v1.0.0/exotel-webrtc.js"></script>
+<script src="{{ asset('admin/assets/js/exotelsdk.js') }}"></script>
 <script src="{{ asset('admin/assets/js/exotel-service.js') }}"></script>
+
+<!-- Realtime Subscriptions -->
+<script src="https://js.pusher.com/8.0.1/pusher.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.15.3/dist/echo.iife.js"></script>
+
+<script>
+    (function() {
+        const pusherKey = "{{ env('PUSHER_APP_KEY') }}";
+        
+        if (!pusherKey) {
+            console.warn('PUSHER_APP_KEY is missing. Real-time updates disabled, falling back to polling.');
+        } else {
+            // Initialize Echo
+            window.Pusher = Pusher;
+            window.Echo = new Echo({
+                broadcaster: 'pusher',
+                key: pusherKey,
+                cluster: "{{ env('PUSHER_APP_CLUSTER', 'mt1') }}",
+                forceTLS: true,
+                wsHost: "{{ env('PUSHER_HOST', 'api.pusher.com') }}",
+                wsPort: {{ env('PUSHER_PORT', 443) }},
+                wssPort: {{ env('PUSHER_PORT', 443) }},
+                enabledTransports: ['ws', 'wss'],
+            });
+
+            const currentEmployeeId = {{ Auth::user()->employee->id ?? 'null' }};
+
+            // Listen for status updates
+            window.Echo.channel('agent-status')
+                .listen('.status.updated', (e) => {
+                    console.log('Realtime Status Update received:', e);
+                    if (e.employeeId == currentEmployeeId && window.exotelService) {
+                        window.exotelService.status = e.status;
+                        window.exotelService.updateUIStatus(e.status);
+                    }
+                });
+        }
+
+        // Polling Fallback (Interval of 30 seconds to sync state if WebSockets miss an event)
+        setInterval(() => {
+            if (window.exotelService) {
+                console.log('Running polling fallback sync...');
+                window.exotelService.init();
+            }
+        }, 30000);
+    })();
+</script>
+
+@endpush

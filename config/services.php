@@ -36,6 +36,7 @@ return [
     ],
 
     'exotel' => [
+        'account_sid' => env('EXOTEL_ACCOUNT_SID', 'exotelt1'),
         'api_key' => env('EXOTEL_API_KEY'),
         'api_token' => env('EXOTEL_API_TOKEN'),
         'subdomain' => env('EXOTEL_SUBDOMAIN'),

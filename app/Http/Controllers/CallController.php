@@ -1,3 +1,5 @@
+<?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Call;
@@ -25,6 +27,8 @@ class CallController extends Controller
             ['status' => $status, 'last_activity' => now()]
         );
 
+        event(new \App\Events\AgentStatusUpdated($user->employee->id, $status));
+
         return response()->json([
             'status' => $session->status, 
             'message' => 'Status updated to ' . $status
@@ -47,8 +51,11 @@ class CallController extends Controller
             'status' => $session->status,
             'exotel_config' => [
                 'apiKey' => config('services.exotel.api_key'),
-                'subdomain' => config('services.exotel.subdomain'),
+                'accountSid' => config('services.exotel.account_sid', 'exotelt1'),
+                'subdomain' => config('services.exotel.subdomain', 'api.exotel.com'),
                 'token' => $this->generateExotelToken($employee->employee_id),
+                'agentId' => $employee->employee_id,
+                'appId' => config('services.exotel.app_id'),
             ]
         ]);
     }
@@ -66,8 +73,14 @@ class CallController extends Controller
         $payload = json_encode([
             'iss' => $apiKey,
             'iat' => time(),
-            'exp' => time() + 3600 * 8, // 8 hours
-            'sub' => $agentId
+            'exp' => time() + 3600, // 1 hour
+            'sub' => "sip:{$agentId}@" . config('services.exotel.subdomain', 'api.exotel.com'),
+            'aud' => config('services.exotel.subdomain', 'api.exotel.com'),
+            'app_id' => config('services.exotel.app_id'),
+            'account_sid' => config('services.exotel.account_sid', 'exotelt1'),
+            'grants' => [
+                'rtc' => true
+            ]
         ]);
 
         $base64UrlHeader = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($header));
@@ -137,6 +150,42 @@ class CallController extends Controller
         ]);
 
         $user = Auth::user();
+        $employee = $user->employee;
+
+        if (!$employee) {
+            return response()->json(['error' => 'Employee record not found'], 404);
+        }
+
+        $config = config('services.exotel');
+        $accountSid = $config['account_sid'];
+        $apiKey = $config['api_key'];
+        $apiToken = $config['api_token'];
+        $subdomain = $config['subdomain'] ?: 'api.exotel.com';
+        $virtualNumber = $config['virtual_number'];
+
+        // Exotel 'Connect' API: Connects the WebRTC Agent (From) to the Customer (To)
+        // For WebRTC agents, 'From' is their SIP Identity: agentId
+        // Exotel will then send an INVITE to the registered WebRTC client.
+        
+        $response = \Illuminate\Support\Facades\Http::withBasicAuth($apiKey, $apiToken)
+            ->asForm()
+            ->post("https://{$subdomain}/v1/Accounts/{$accountSid}/Calls/connect.json", [
+                'From' => $employee->employee_id, // The WebRTC agent identity
+                'To' => $request->phone_number,
+                'CallerId' => $virtualNumber,
+                'StatusCallback' => route('api.exotel.callback'),
+                'StatusCallbackEvents' => ['terminal'],
+            ]);
+
+        if ($response->failed()) {
+            \Illuminate\Support\Facades\Log::error('Exotel Call Failed', [
+                'status' => $response->status(),
+                'body' => $response->body()
+            ]);
+            return response()->json(['error' => 'Failed to initiate call via Exotel: ' . $response->body()], 500);
+        }
+
+        $exotelData = $response->json();
         
         // Log the outbound call attempt
         $call = Call::create([
@@ -144,13 +193,47 @@ class CallController extends Controller
             'external_number' => $request->phone_number,
             'lead_id' => $request->lead_id,
             'direction' => 'outbound',
-            'status' => 'active', // Will be updated by Exotel events
+            'status' => 'active', 
             'start_time' => now(),
+            'call_sid' => $exotelData['Call']['Sid'] ?? null,
         ]);
 
         return response()->json([
             'message' => 'Call initiated',
-            'call_id' => $call->id
+            'call_id' => $call->id,
+            'exotel_response' => $exotelData
         ]);
+    }
+
+    public function handleExotelCallback(Request $request)
+    {
+        \Illuminate\Support\Facades\Log::info('Exotel Callback Received', $request->all());
+
+        $sid = $request->input('CallSid');
+        $status = $request->input('Status'); // completed, busy, failed, no-answer
+        
+        $call = Call::where('call_sid', $sid)->first();
+
+        if ($call) {
+            $updateData = [];
+            if ($status === 'completed') {
+                $updateData['status'] = 'ended';
+                $updateData['end_time'] = now();
+            } else {
+                $updateData['status'] = $status;
+            }
+
+            if ($request->has('RecordingUrl')) {
+                $updateData['recording_url'] = $request->input('RecordingUrl');
+            }
+
+            $call->update($updateData);
+
+            if ($status === 'completed') {
+                broadcast(new CallEnded($call));
+            }
+        }
+
+        return response('OK', 200);
     }
 }

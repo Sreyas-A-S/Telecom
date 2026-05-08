@@ -604,3 +604,5 @@ Route::get('/l5-swagger/generate', function () {
         'output' => Artisan::output()
     ]);
 });
+
+Route::post('/exotel/callback', [CallController::class, 'handleExotelCallback'])->name('api.exotel.callback');

@@ -21,6 +21,9 @@ return Application::configure(basePath: dirname(__DIR__))
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->validateCsrfTokens(except: [
+            '/exotel/callback',
+        ]);
         $middleware->api(prepend: [
             // \App\Http\Middleware\AuthMiddleware::class, // Removed custom AuthMiddleware
         ]);

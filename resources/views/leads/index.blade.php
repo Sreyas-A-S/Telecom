@@ -1408,6 +1408,21 @@
 
 
 
+        // Restore last active tab
+        var activeTab = localStorage.getItem('lastActiveLeadTab');
+        if (activeTab) {
+            var tabEl = document.querySelector('#' + activeTab);
+            if (tabEl) {
+                var tab = new bootstrap.Tab(tabEl);
+                tab.show();
+            }
+        }
+
+        // Save active tab on change
+        $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+            localStorage.setItem('lastActiveLeadTab', e.target.id);
+        });
+
         // Prevent form submission on Enter key in map_location input
         $('#map_location').on('keydown', function(e) {
             if (e.key === 'Enter') {
@@ -1678,6 +1693,9 @@
                         orderable: false,
                         searchable: false,
                         render: function(data, type, row) {
+                            var phoneNumber = row.name ? row.name.phone_number : '';
+                            var callBtn = '<a href="javascript:void(0)" title="Call Lead" onclick="window.exotelService.dialLead(\'' + phoneNumber + '\', ' + row.id + ')"><i class="icon-headphone text-success"></i></a>';
+                            
                             var viewBtn = '<a class="" title="View" href="/leads/' + row
                                 .id +
                                 '/profile"><i class="fa fa-eye text-success"></i></a>';
@@ -1731,7 +1749,7 @@
                             }
 
                             return '<ul class="action d-flex justify-content-around list-unstyled gap-4">' +
-                                convertBtn + viewBtn + editBtn + deleteBtn + '</ul>';
+                                callBtn + convertBtn + viewBtn + editBtn + deleteBtn + '</ul>';
                         }
                     },
                 ],
@@ -1913,6 +1931,9 @@
                         orderable: false,
                         searchable: false,
                         render: function(data, type, row) {
+                            var phoneNumber = (row.name && row.name.phone_number) ? row.name.phone_number : (row.phone_number || '');
+                            var callBtn = '<a href="javascript:void(0)" title="Call Lead" onclick="window.exotelService.dialLead(\'' + phoneNumber + '\', ' + row.id + ')"><i class="icon-headphone text-success"></i></a>';
+
                             var viewBtn = '<a class="" title="View" href="/leads/' + row
                                 .id +
                                 '/profile"><i class="icon-eye text-success"></i></a>';
@@ -1965,7 +1986,7 @@
                             @endif
 
                             return '<ul class="action d-flex justify-content-around list-unstyled gap-4">' +
-                                assignBtn + convertBtn + viewBtn + editBtn + deleteBtn +
+                                callBtn + assignBtn + convertBtn + viewBtn + editBtn + deleteBtn +
                                 '</ul>';
                         }
                     },
