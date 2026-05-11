@@ -37,50 +37,17 @@
       border-width: 0.15em;
     }
 
-    /* Logo Carousel Styles */
-    .logo-carousel-container {
-      width: 200px;
-      height: 50px;
-      overflow: hidden;
-      position: relative;
-      margin-bottom: 20px;
-    }
-
-    .logo-carousel-track {
+    /* Login Logo Style */
+    .login-logo-container {
+      margin-bottom: 30px;
       display: flex;
-      flex-direction: column;
-      animation: endless-slide 6s cubic-bezier(0.645, 0.045, 0.355, 1) infinite;
-    }
-
-    .logo-item {
-      height: 50px;
-      display: flex;
-      align-items: center;
       justify-content: flex-start;
-      flex-shrink: 0;
     }
 
-    .logo-item img {
-      max-height: 45px;
+    .login-logo-container img {
+      max-height: 50px;
       width: auto;
       object-fit: contain;
-    }
-
-    @keyframes endless-slide {
-
-      0%,
-      40% {
-        transform: translateY(0);
-      }
-
-      50%,
-      90% {
-        transform: translateY(-50px);
-      }
-
-      100% {
-        transform: translateY(0);
-      }
     }
   </style>
 @endpush
@@ -103,16 +70,8 @@
       <div class="col-xl-7 p-0">
         <div class="login-card">
           <div class="mb-4">
-            <div class="logo-carousel-container">
-              <div class="logo-carousel-track">
-                <div class="logo-item">
-                  <img class="img-fluid for-dark" src="{{ asset('admin/assets/images/logo/logo.png') }}" alt="logo">
-                  <img class="img-fluid for-light" src="{{ asset('admin/assets/images/logo/logo_dark.png') }}" alt="logo">
-                </div>
-                <div class="logo-item text-start">
-                  <img class="img-fluid" src="{{ asset('admin/assets/images/logo/svhe.png') }}" alt="svhe logo">
-                </div>
-              </div>
+            <div class="login-logo-container">
+                <img class="img-fluid" src="{{ asset('admin/assets/images/logo/korps-sync-crm-logo-white.png') }}" alt="logo">
             </div>
             <div class="login-main">
               <form class="theme-form" action="{{ route('login') }}" method="POST">

@@ -176,14 +176,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('clock/out', [ClockApiController::class, 'clockOut']);
     Route::get('clock/status', [ClockApiController::class, 'getClockStatus']);
 
-    // Dashboard Analytics API Routes
-    Route::get('dashboard/lead-statistics', [DashboardController::class, 'getLeadStatistics']);
-    Route::get('dashboard/lead-source-breakdown', [DashboardController::class, 'getLeadSourceBreakdown']);
-    Route::get('dashboard/employee-lead-performance', [DashboardController::class, 'getEmployeeLeadPerformance']);
-    Route::get('dashboard/top-clients', [DashboardController::class, 'getTopClients']);
-    Route::get('dashboard/recent-activities', [DashboardController::class, 'getRecentActivities']);
-    Route::get('dashboard/upcoming-events', [DashboardController::class, 'getUpcomingEvents']);
-    Route::get('dashboard/all-leads', [DashboardController::class, 'getAllLeads']);
+
 
     Route::get('brand-settings/{dealership_id}/settings', [BrandSettingController::class, 'getDealershipSettings']);
 

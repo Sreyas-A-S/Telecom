@@ -76,11 +76,6 @@
                             <span id="btn-loader" class="spinner-border spinner-border-sm me-2" role="status" style="display: none;"></span>
                             <span id="btn-text">Go Online</span>
                         </button>
-                        <div class="text-center mt-3 border-top pt-2">
-                            <a href="javascript:void(0)" onclick="window.exotelService.openConsole()" class="text-primary f-w-600" style="font-size: 11px;">
-                                <i class="fa fa-external-link-alt me-1"></i>Pop-out Console
-                            </a>
-                        </div>
                     </div>
                 </li>
                 <!-- <li class="onhover-dropdown">

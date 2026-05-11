@@ -119,26 +119,23 @@
 </head>
 <body>
 
+    <div id="console-preloader" style="position: fixed; inset: 0; background: #fff; z-index: 9999; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>
+        <p class="mt-3 text-muted f-w-600">Initializing Console...</p>
+    </div>
+
     <div class="console-container">
         <!-- Header -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h5 class="mb-0 f-w-700 text-primary">Call Console</h5>
-            <img src="{{ asset('admin/assets/images/logo/logo-icon.png') }}" alt="Logo" style="width: 30px;">
+        <div class="d-flex align-items-center justify-content-between mb-4 pb-3 border-bottom">
+            <h6 class="mb-0 f-w-700 text-primary" style="font-size: 14px;">Console</h6>
+            
+            <a href="javascript:void(0)" onclick="window.close()" class="btn btn-light btn-sm rounded-pill px-3 py-1" style="font-size: 11px; font-weight: 700; color: #888; border: 1px solid #eee;">
+                <i class="icofont icofont-close-line me-1"></i> Close
+            </a>
+
+            <img src="{{ asset('admin/assets/images/logo/logo-icon.png') }}" alt="Logo" style="width: 25px;">
         </div>
 
-        <!-- Status Card -->
-        <div class="status-card">
-            <div class="mb-3 d-flex align-items-center justify-content-center">
-                <span id="agent-status-dot" class="status-dot bg-secondary"></span>
-                <span id="agent-status-text" class="f-w-600">Offline</span>
-                <div id="agent-status-loader" class="spinner-border spinner-border-sm text-primary ms-2" role="status" style="display: none;"></div>
-            </div>
-            
-            <button id="availability-toggle-btn" class="btn btn-success w-100" onclick="window.exotelService.toggleAvailability()">
-                <span id="btn-loader" class="spinner-border spinner-border-sm me-2" role="status" style="display: none;"></span>
-                <span id="btn-text">Go Online</span>
-            </button>
-        </div>
 
         <!-- Active Call Panel -->
         <div id="exotel-active-call-bar" class="active-call-panel">
@@ -184,6 +181,45 @@
         </div>
     </div>
 
+    <!-- Confirm Call Modal -->
+    <div class="modal fade" id="confirmCallModal" tabindex="-1" aria-labelledby="confirmCallModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="confirmCallModalLabel">Confirm Call</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center p-4">
+                    <p class="mb-1 text-muted">Are you sure you want to call</p>
+                    <h4 class="f-w-700 text-dark mb-0" id="confirm-call-phone"></h4>
+                </div>
+                <div class="modal-footer border-0 justify-content-center pb-4">
+                    <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary px-4" onclick="window.exotelService.confirmDialLead()">Call Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Hangup Modal -->
+    <div class="modal fade" id="confirmHangupModal" tabindex="-1" aria-labelledby="confirmHangupModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="confirmHangupModalLabel">Confirm Hang Up</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center p-4 text-dark">
+                    Are you sure you want to end the active call?
+                </div>
+                <div class="modal-footer border-0 justify-content-center pb-4">
+                    <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger px-4" onclick="window.exotelService.confirmEndCall()">Hang Up</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="{{ asset('admin/assets/js/jquery-3.6.0.min.js') }}"></script>
     <script src="{{ asset('admin/assets/js/bootstrap/bootstrap.bundle.min.js') }}"></script>
     
@@ -205,6 +241,35 @@
                     $('#idle-panel').show();
                 }
             };
+
+            // Handle automatic dialing from URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const dialNumber = urlParams.get('dial');
+            const leadId = urlParams.get('lead_id');
+
+            if (dialNumber) {
+                // Wait for service to initialize then show confirmation
+                setTimeout(() => {
+                    $('#console-preloader').fadeOut();
+                    // Check if online. If not, go online automatically
+                    if (window.exotelService.status !== 'available' && window.exotelService.status !== 'busy') {
+                        window.exotelService.toggleAvailability().then(() => {
+                            showCallConfirmation(dialNumber, leadId);
+                        });
+                    } else {
+                        showCallConfirmation(dialNumber, leadId);
+                    }
+                }, 1000);
+            } else {
+                $('#console-preloader').fadeOut();
+            }
+
+            function showCallConfirmation(phoneNumber, leadId) {
+                window.exotelService.pendingCallNumber = phoneNumber;
+                window.exotelService.pendingLeadId = leadId;
+                $('#confirm-call-phone').text(phoneNumber);
+                $('#confirmCallModal').modal('show');
+            }
         });
     </script>
 </body>

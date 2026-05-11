@@ -92,7 +92,7 @@ class LiveLocationController extends Controller
 
         $traceTaskIds = $traces->whereNotNull('task_id')->pluck('task_id');
         $logTaskIds = $visitTaskLogs->pluck('task_id')->filter();
-        
+
         $visitTaskIds = $traceTaskIds->merge($logTaskIds)->unique();
 
         $tasks = $visitTaskIds->isNotEmpty()
@@ -228,7 +228,7 @@ class LiveLocationController extends Controller
 
         // Fix for PDF: add missing fields
         $allClientDetails = collect();
-        $clients->each(function($c) use ($allClientDetails) {
+        $clients->each(function ($c) use ($allClientDetails) {
             $detail = "Client: " . ($c->name ?: 'N/A');
             if ($c->phone_number) $detail .= " (Ph: $c->phone_number)";
             if ($c->email) $detail .= " (Email: $c->email)";
@@ -238,11 +238,11 @@ class LiveLocationController extends Controller
         $clientFullInfo = $allClientDetails->unique()->implode("\n") ?: 'N/A';
 
         $detailedLeadServiceInfo = collect();
-        $leads->each(function($l) use ($detailedLeadServiceInfo) {
+        $leads->each(function ($l) use ($detailedLeadServiceInfo) {
             $productName = property_exists($l, 'product') && $l->product ? $l->product->name : 'N/A';
             $detailedLeadServiceInfo->push("[Lead] Name: $l->name | Phone: $l->phone_number | Product: $productName | Status: $l->status | Remarks: $l->remarks");
         });
-        $services->each(function($s) use ($detailedLeadServiceInfo) {
+        $services->each(function ($s) use ($detailedLeadServiceInfo) {
             $productName = property_exists($s, 'product') && $s->product ? $s->product->name : 'N/A';
             $detailedLeadServiceInfo->push("[Service] Name: $s->name | Contact: $s->contact_info | Product: $productName | S/N: $s->machine_serial_number | Status: $s->call_status | Remarks: $s->call_remarks");
         });
@@ -748,13 +748,13 @@ class LiveLocationController extends Controller
 
         if ($traces->isNotEmpty()) {
             $engineerRate = (float) DB::table('settings')->where('key', 'travel_allowance_engineer_rate_per_call')->value('value') ?: 0.0;
-            
+
             $user = Auth::user();
             $employee = $user->employee;
             $canViewAll = checkMenu(Session::get('role_id'), 38, 'read');
             $canViewSub = checkMenu(Session::get('role_id'), 40, 'read');
             $canViewSelf = checkMenu(Session::get('role_id'), 29, 'read');
-            
+
             $firstTrace = $traces->first();
             $traceUserId = $firstTrace->user_id;
 
@@ -1052,7 +1052,7 @@ class LiveLocationController extends Controller
                     for ($i = 0; $i < $visitTraces->count() - 1; $i++) {
                         $point1 = $visitTraces[$i];
                         $point2 = $visitTraces[$i + 1];
-                        
+
                         if (empty($point1->latitude) || empty($point2->latitude)) continue;
 
                         $totalDistance += calculateDistance(
@@ -1089,17 +1089,17 @@ class LiveLocationController extends Controller
 
         // Use false for relationships to avoid hydrating thousands of models with nested relations
         $query = $this->getFilteredQuery($request, false);
-        
+
         // Select only necessary columns to reduce memory
         $data = $query->select(
-            'user_gps_traces.visit_id', 
-            'user_gps_traces.user_id', 
-            'user_gps_traces.task_id', 
-            'user_gps_traces.client_id', 
-            'user_gps_traces.created_at', 
-            'user_gps_traces.latitude', 
-            'user_gps_traces.longitude', 
-            'user_gps_traces.remarks', 
+            'user_gps_traces.visit_id',
+            'user_gps_traces.user_id',
+            'user_gps_traces.task_id',
+            'user_gps_traces.client_id',
+            'user_gps_traces.created_at',
+            'user_gps_traces.latitude',
+            'user_gps_traces.longitude',
+            'user_gps_traces.remarks',
             'user_gps_traces.vehicle_type',
             'user_gps_traces.image_path'
         )->get();
@@ -1117,7 +1117,7 @@ class LiveLocationController extends Controller
 
         $users = \App\Models\User::with(['employee.department', 'employee.dealership'])->whereIn('id', $userIds)->get()->keyBy('id');
         $tasks = \App\Models\Task::whereIn('id', $taskIds)->get()->keyBy('id');
-        
+
         // Extract all Lead and Service IDs from the pre-loaded tasks
         $allLeadIds = $tasks->pluck('lead_id')->filter()->unique();
         $allServiceEntryIds = $tasks->filter(function ($t) {
@@ -1128,7 +1128,7 @@ class LiveLocationController extends Controller
         })->pluck('entry_id')->filter()->unique();
 
         $allLeads = \App\Models\Lead::whereIn('id', $allLeadIds)->with(['product', 'leadSource'])->get(['id', 'client_id', 'location', 'name', 'phone_number', 'email', 'company', 'status', 'remarks', 'product_id', 'lead_source_id'])->keyBy('id');
-        $allServices = $allServiceEntryIds->isNotEmpty() 
+        $allServices = $allServiceEntryIds->isNotEmpty()
             ? \App\Models\Service::whereIn('id', $allServiceEntryIds)->with(['product'])->get(['id', 'client_id', 'requested_location', 'name', 'contact_info', 'contact_person', 'call_status', 'call_remarks', 'product_id', 'type_of_service', 'machine_serial_number'])->keyBy('id')
             : collect();
 
@@ -1151,12 +1151,12 @@ class LiveLocationController extends Controller
         // Bulk load task logs for the entire time range if possible
         $minDate = $data->min('created_at');
         $maxDate = $data->max('created_at');
-        
+
         $allTaskLogs = \App\Models\TaskLog::with('task')
             ->whereIn('employee_id', $employeeIds)
-            ->where(function($q) use ($minDate, $maxDate) {
+            ->where(function ($q) use ($minDate, $maxDate) {
                 $q->whereBetween('start_time', [$minDate, $maxDate])
-                  ->orWhereBetween('end_time', [$minDate, $maxDate]);
+                    ->orWhereBetween('end_time', [$minDate, $maxDate]);
             })
             ->get();
 
@@ -1188,15 +1188,17 @@ class LiveLocationController extends Controller
                     if (empty($point1->latitude) || empty($point2->latitude)) continue;
 
                     $totalDistance += calculateDistance(
-                        $point1->latitude, $point1->longitude,
-                        $point2->latitude, $point2->longitude
+                        $point1->latitude,
+                        $point1->longitude,
+                        $point2->latitude,
+                        $point2->longitude
                     );
                 }
             }
 
             $user = $users[$originalFirstTrace->user_id] ?? null;
             if (!$user) continue;
-            
+
             $employee = $user->employee ?? null;
 
             // Collect all unique tasks, leads, services, and clients in this visit from pre-loaded data
@@ -1232,7 +1234,7 @@ class LiveLocationController extends Controller
                 }
             }
             $taskTitles = $taskTitlesCol->unique()->implode(', ') ?: 'N/A';
-            
+
             $serviceTaskCount = $visitTasks
                 ->where('is_service', 1)
                 ->whereIn('status', ['completed', 'partial'])
@@ -1250,7 +1252,7 @@ class LiveLocationController extends Controller
 
             // Correctly aggregate all relevant data, prioritizing Tasks/Services/Leads but capturing all.
             $allClientDetails = collect();
-            $visitClients->each(function($c) use ($allClientDetails) {
+            $visitClients->each(function ($c) use ($allClientDetails) {
                 $detail = "Client: $c->name";
                 if ($c->phone_number) $detail .= " (Ph: $c->phone_number)";
                 if ($c->email) $detail .= " (Email: $c->email)";
@@ -1273,17 +1275,17 @@ class LiveLocationController extends Controller
 
             // Additional Detailed Summary for Leads/Services
             $detailedLeadServiceInfo = collect();
-            $visitLeads->each(function($l) use ($detailedLeadServiceInfo) {
+            $visitLeads->each(function ($l) use ($detailedLeadServiceInfo) {
                 $productName = $l->product ? $l->product->name : 'N/A';
                 $source = $l->leadSource ? $l->leadSource->name : 'N/A';
                 $detailedLeadServiceInfo->push("[Lead] Name: $l->name | Phone: $l->phone_number | Product: $productName | Source: $source | Status: $l->status | Remarks: $l->remarks");
             });
-            $visitServices->each(function($s) use ($detailedLeadServiceInfo) {
+            $visitServices->each(function ($s) use ($detailedLeadServiceInfo) {
                 $productName = $s->product ? $s->product->name : 'N/A';
                 $detailedLeadServiceInfo->push("[Service] Name: $s->name | Contact: $s->contact_info | Product: $productName | S/N: $s->machine_serial_number | Status: $s->call_status | Remarks: $s->call_remarks");
             });
             $leadServiceSummary = $detailedLeadServiceInfo->unique()->implode("\n") ?: 'No detailed Lead/Service info.';
-            
+
             $vehicleTypes = $traces->pluck('vehicle_type')->filter()->unique()->map(fn($v) => ucfirst($v))->implode(', ') ?: 'N/A';
             $allRemarks = $traces->whereNotNull('remarks')->pluck('remarks')->unique()->implode('; ') ?: 'N/A';
 
@@ -1312,9 +1314,9 @@ class LiveLocationController extends Controller
                     $visitStart = Carbon::parse($firstTrace->created_at);
                     $visitEnd = Carbon::parse($lastTrace->created_at);
 
-                    return ($logStart->between($visitStart, $visitEnd)) || 
-                           ($logEnd && $logEnd->between($visitStart, $visitEnd)) ||
-                           ($logStart->lte($visitStart) && (!$logEnd || $logEnd->gte($visitEnd)));
+                    return ($logStart->between($visitStart, $visitEnd)) ||
+                        ($logEnd && $logEnd->between($visitStart, $visitEnd)) ||
+                        ($logStart->lte($visitStart) && (!$logEnd || $logEnd->gte($visitEnd)));
                 });
 
             $logDetails = $visitTaskLogs->map(function ($log) {
@@ -1501,7 +1503,7 @@ class LiveLocationController extends Controller
         }
 
         $engineerRate = (float) DB::table('settings')->where('key', 'travel_allowance_engineer_rate_per_call')->value('value') ?: 0.0;
-        
+
         $summary = null;
 
         foreach ($visitsParam as $visitData) {
@@ -1608,7 +1610,7 @@ class LiveLocationController extends Controller
         }
 
         if ($exportType === 'pdf') {
-            $primaryLogoPath = public_path('admin/assets/images/logo/logo-white.png');
+            $primaryLogoPath = public_path('admin/assets/images/logo/korps-sync-crm-logo-white.png');
             $secondaryLogoPath = public_path('admin/assets/images/logo/svhe.png');
 
             $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('timeline.pdf', [
@@ -1630,14 +1632,14 @@ class LiveLocationController extends Controller
 
         $query = $this->getFilteredQuery($request, false);
         $data = $query->select(
-            'user_gps_traces.visit_id', 
-            'user_gps_traces.user_id', 
-            'user_gps_traces.task_id', 
-            'user_gps_traces.client_id', 
-            'user_gps_traces.created_at', 
-            'user_gps_traces.latitude', 
-            'user_gps_traces.longitude', 
-            'user_gps_traces.remarks', 
+            'user_gps_traces.visit_id',
+            'user_gps_traces.user_id',
+            'user_gps_traces.task_id',
+            'user_gps_traces.client_id',
+            'user_gps_traces.created_at',
+            'user_gps_traces.latitude',
+            'user_gps_traces.longitude',
+            'user_gps_traces.remarks',
             'user_gps_traces.vehicle_type',
             'user_gps_traces.image_path'
         )->get();
@@ -1654,7 +1656,7 @@ class LiveLocationController extends Controller
 
         $users = \App\Models\User::with(['employee.department', 'employee.dealership'])->whereIn('id', $userIds)->get()->keyBy('id');
         $tasks = \App\Models\Task::whereIn('id', $taskIds)->get()->keyBy('id');
-        
+
         // Extract all Lead and Service IDs from the pre-loaded tasks
         $allLeadIds = $tasks->pluck('lead_id')->filter()->unique();
         $allServiceEntryIds = $tasks->filter(function ($t) {
@@ -1665,7 +1667,7 @@ class LiveLocationController extends Controller
         })->pluck('entry_id')->filter()->unique();
 
         $allLeads = \App\Models\Lead::whereIn('id', $allLeadIds)->with(['product', 'leadSource'])->get(['id', 'client_id', 'location', 'name', 'phone_number', 'email', 'company', 'status', 'remarks', 'product_id', 'lead_source_id'])->keyBy('id');
-        $allServices = $allServiceEntryIds->isNotEmpty() 
+        $allServices = $allServiceEntryIds->isNotEmpty()
             ? \App\Models\Service::whereIn('id', $allServiceEntryIds)->with(['product'])->get(['id', 'client_id', 'requested_location', 'name', 'contact_info', 'contact_person', 'call_status', 'call_remarks', 'product_id', 'type_of_service', 'machine_serial_number'])->keyBy('id')
             : collect();
 
@@ -1689,9 +1691,9 @@ class LiveLocationController extends Controller
         $maxDate = $data->max('created_at');
         $allTaskLogs = \App\Models\TaskLog::with('task')
             ->whereIn('employee_id', $employeeIds)
-            ->where(function($q) use ($minDate, $maxDate) {
+            ->where(function ($q) use ($minDate, $maxDate) {
                 $q->whereBetween('start_time', [$minDate, $maxDate])
-                  ->orWhereBetween('end_time', [$minDate, $maxDate]);
+                    ->orWhereBetween('end_time', [$minDate, $maxDate]);
             })->get();
 
         $processedData = collect();
@@ -1722,8 +1724,10 @@ class LiveLocationController extends Controller
                     if (empty($point1->latitude) || empty($point2->latitude)) continue;
 
                     $totalDistance += calculateDistance(
-                        $point1->latitude, $point1->longitude,
-                        $point2->latitude, $point2->longitude
+                        $point1->latitude,
+                        $point1->longitude,
+                        $point2->latitude,
+                        $point2->longitude
                     );
                 }
             }
@@ -1766,7 +1770,7 @@ class LiveLocationController extends Controller
                 }
             }
             $taskTitles = $taskTitlesCol->unique()->implode(', ') ?: 'N/A';
-            
+
             $serviceTaskCount = $visitTasks
                 ->where('is_service', 1)
                 ->whereIn('status', ['completed', 'partial'])
@@ -1784,7 +1788,7 @@ class LiveLocationController extends Controller
 
             // Correctly aggregate all relevant data, prioritizing Tasks/Services/Leads but capturing all.
             $allClientDetails = collect();
-            $visitClients->each(function($c) use ($allClientDetails) {
+            $visitClients->each(function ($c) use ($allClientDetails) {
                 $detail = "Client: $c->name";
                 if ($c->phone_number) $detail .= " (Ph: $c->phone_number)";
                 if ($c->email) $detail .= " (Email: $c->email)";
@@ -1807,17 +1811,17 @@ class LiveLocationController extends Controller
 
             // Additional Detailed Summary for Leads/Services
             $detailedLeadServiceInfo = collect();
-            $visitLeads->each(function($l) use ($detailedLeadServiceInfo) {
+            $visitLeads->each(function ($l) use ($detailedLeadServiceInfo) {
                 $productName = $l->product ? $l->product->name : 'N/A';
                 $source = $l->leadSource ? $l->leadSource->name : 'N/A';
                 $detailedLeadServiceInfo->push("[Lead] Name: $l->name | Phone: $l->phone_number | Product: $productName | Source: $source | Status: $l->status | Remarks: $l->remarks");
             });
-            $visitServices->each(function($s) use ($detailedLeadServiceInfo) {
+            $visitServices->each(function ($s) use ($detailedLeadServiceInfo) {
                 $productName = $s->product ? $s->product->name : 'N/A';
                 $detailedLeadServiceInfo->push("[Service] Name: $s->name | Contact: $s->contact_info | Product: $productName | S/N: $s->machine_serial_number | Status: $s->call_status | Remarks: $s->call_remarks");
             });
             $leadServiceSummary = $detailedLeadServiceInfo->unique()->implode("\n") ?: 'No detailed Lead/Service info.';
-            
+
             $vehicleTypes = $traces->pluck('vehicle_type')->filter()->unique()->map(fn($v) => ucfirst($v))->implode(', ') ?: 'N/A';
             $allRemarks = $traces->whereNotNull('remarks')->pluck('remarks')->unique()->implode('; ') ?: 'N/A';
 
@@ -1846,9 +1850,9 @@ class LiveLocationController extends Controller
                     $visitStart = Carbon::parse($firstTrace->created_at);
                     $visitEnd = Carbon::parse($lastTrace->created_at);
 
-                    return ($logStart->between($visitStart, $visitEnd)) || 
-                           ($logEnd && $logEnd->between($visitStart, $visitEnd)) ||
-                           ($logStart->lte($visitStart) && (!$logEnd || $logEnd->gte($visitEnd)));
+                    return ($logStart->between($visitStart, $visitEnd)) ||
+                        ($logEnd && $logEnd->between($visitStart, $visitEnd)) ||
+                        ($logStart->lte($visitStart) && (!$logEnd || $logEnd->gte($visitEnd)));
                 });
 
             $logDetails = $visitTaskLogs->map(function ($log) {
@@ -1929,9 +1933,9 @@ class LiveLocationController extends Controller
             ]);
         }
 
-        $primaryLogoPath = public_path('admin/assets/images/logo/logo-white.png');
+        $primaryLogoPath = public_path('admin/assets/images/logo/korps-sync-crm-logo-white.png');
         $secondaryLogoPath = public_path('admin/assets/images/logo/svhe.png');
-        
+
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('timeline.pdf', [
             'data' => $processedData,
             'primaryLogoPath' => $primaryLogoPath,
@@ -2141,7 +2145,7 @@ class LiveLocationController extends Controller
         $haltTaskIds = $halt_traces->whereNotNull('task_id')->pluck('task_id')->unique();
         $haltTaskTitles = '';
         if ($tasks && $haltTaskIds->isNotEmpty()) {
-            $haltTaskTitles = $tasks->whereIn('id', $haltTaskIds)->map(function($t) {
+            $haltTaskTitles = $tasks->whereIn('id', $haltTaskIds)->map(function ($t) {
                 $category = $t->is_service ? '[Service]' : ($t->lead_id ? '[Lead]' : '[General]');
                 return "$category {$t->title}";
             })->implode(', ');
@@ -2194,7 +2198,7 @@ class LiveLocationController extends Controller
         // Thin out points that are too close together
         $validTraces = collect([$rawTraces->first()]);
         $minMoveThreshold = 3; // meters default
-        
+
         // If we have a massive amount of traces, increase the threshold to avoid excessive API calls
         if ($rawTraces->count() > 5000) {
             $minMoveThreshold = 10;
@@ -2230,7 +2234,7 @@ class LiveLocationController extends Controller
                     $ratio = $j / ($pointsToInject + 1);
                     $interpLat = $p1->latitude + ($p2->latitude - $p1->latitude) * $ratio;
                     $interpLng = $p1->longitude + ($p2->longitude - $p1->longitude) * $ratio;
-                    
+
                     $densified->push((object)[
                         'latitude' => $interpLat,
                         'longitude' => $interpLng,

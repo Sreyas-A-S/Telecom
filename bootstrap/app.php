@@ -18,6 +18,10 @@ return Application::configure(basePath: dirname(__DIR__))
 
             Route::middleware('web')
                 ->group(base_path('routes/public.php'));
+
+            Route::middleware(['api', 'auth:api'])
+                ->prefix('api')
+                ->group(base_path('routes/telecom_api.php'));
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {

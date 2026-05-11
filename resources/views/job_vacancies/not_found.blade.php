@@ -139,7 +139,7 @@
                                 </div>
                                 <div class="card-footer bg-dark text-center py-3">
                                     <div class="mb-2">
-                                        <img src="{{ asset('admin/assets/images/logo/logo-white.png') }}" alt="Korps" style="height: 30px; opacity: 0.9;">
+                                        <img src="{{ asset('admin/assets/images/logo/korps-sync-crm-logo-white.png') }}" alt="Korps" style="height: 30px; opacity: 0.9;">
                                     </div>
                                     <p class="mb-0 text-white-50 f-12">&copy; {{ date('Y') }} Logiprompt. All rights reserved.</p>
                                 </div>

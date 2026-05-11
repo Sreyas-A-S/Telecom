@@ -1,12 +1,12 @@
 <div class="sidebar-wrapper" data-layout="stroke-svg">
-    <div class="logo-wrapper" style="min-height: 92px;"><a href="dashboard"><img class="img-fluid slideshow-logo"
-                width="120" src="{{ asset('admin/assets/images/logo/logo-white.png') }}" alt=""></a>
+    <div class="logo-wrapper" style="min-height: 92px;"><a href="dashboard"><img class="img-fluid"
+                width="120" src="{{ asset('admin/assets/images/logo/korps-sync-crm-logo-white.png') }}" alt=""></a>
         <div class="back-btn"><i class="fa fa-angle-left"> </i></div>
         <div class="toggle-sidebar"><i class="status_toggle middle sidebar-toggle" data-feather="grid"> </i>
         </div>
     </div>
-    <div class="logo-icon-wrapper"><a href="dashboard"><img class="img-fluid slideshow-logo" width="100"
-                src="{{ asset('admin/assets/images/logo/logo-white.png') }}" alt=""></a></div>
+    <div class="logo-icon-wrapper"><a href="dashboard"><img class="img-fluid" width="100"
+                src="{{ asset('admin/assets/images/logo/korps-sync-crm-logo-white.png') }}" alt=""></a></div>
     <nav class="sidebar-main">
         <div class="left-arrow" id="left-arrow"><i data-feather="arrow-left"></i></div>
         <div id="sidebar-menu">
@@ -26,7 +26,7 @@
                         <h6 class="lan-1">General</h6>
                     </div>
                 </li>
-                
+
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i><a class="sidebar-link sidebar-title link-nav"
                         href="{{ route('dashboard') }}">
                         <svg class="stroke-icon">
@@ -92,7 +92,7 @@
                 @endif
 
                 {{-- Monitoring Section Hidden --}}
-                {{-- 
+                {{--
                 {{--
                 <li class="sidebar-main-title">
                     <div>
@@ -103,14 +103,14 @@
 
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i><a class="sidebar-link sidebar-title link-nav"
                         href="{{ route('live-location.index') }}">
-                        <svg class="stroke-icon">
-                            <use href="{{ asset('admin/assets/svg/icon-sprite.svg#stroke-maps') }}"></use>
-                        </svg>
-                        <svg class="fill-icon">
-                            <use href="{{ asset("admin/assets/svg/icon-sprite.svg#stroke-user") }}"></use>
-                        </svg><span>Live Location</span>
-                        <div class="according-menu"><i class="fa fa-angle-right"></i></div>
-                    </a></li>
+                <svg class="stroke-icon">
+                    <use href="{{ asset('admin/assets/svg/icon-sprite.svg#stroke-maps') }}"></use>
+                </svg>
+                <svg class="fill-icon">
+                    <use href="{{ asset("admin/assets/svg/icon-sprite.svg#stroke-user") }}"></use>
+                </svg><span>Live Location</span>
+                <div class="according-menu"><i class="fa fa-angle-right"></i></div>
+                </a></li>
 
                 @php
                 $canViewAllTimeline = checkMenu(Session::get('role_id'), 38, 'read');
@@ -359,7 +359,7 @@
 
 
                 {{-- Parts Section Hidden --}}
-                {{-- 
+                {{--
                 {{--
                 @if(checkMenuGroup(Session::get('role_id'), 6))
                 <li class="sidebar-main-title">
@@ -372,14 +372,14 @@
                 @if(checkMenu(Session::get('role_id'), 20, 'read'))
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i><a class="sidebar-link sidebar-title link-nav"
                         href="{{ route('parts.index') }}">
-                        <svg class="stroke-icon">
-                            <use href="{{ asset('admin/assets/svg/icon-sprite.svg#stroke-builders') }}"></use>
-                        </svg>
-                        <svg class="fill-icon">
-                            <use href="{{ asset("admin/assets/svg/icon-sprite.svg#stroke-user") }}"></use>
-                        </svg><span>Parts Management</span>
-                        <div class="according-menu"><i class="fa fa-angle-right"></i></div>
-                    </a></li>
+                <svg class="stroke-icon">
+                    <use href="{{ asset('admin/assets/svg/icon-sprite.svg#stroke-builders') }}"></use>
+                </svg>
+                <svg class="fill-icon">
+                    <use href="{{ asset("admin/assets/svg/icon-sprite.svg#stroke-user") }}"></use>
+                </svg><span>Parts Management</span>
+                <div class="according-menu"><i class="fa fa-angle-right"></i></div>
+                </a></li>
 
                 @endif
                 @if(checkMenu(Session::get('role_id'), 21, 'read'))
@@ -398,7 +398,7 @@
                 --}}
 
                 {{-- Service Section Hidden --}}
-                {{-- 
+                {{--
                 {{--
                 @if(checkMenuGroup(Session::get('role_id'), 5))
                 <li class="sidebar-main-title">
@@ -410,14 +410,14 @@
                 @if(checkMenu(Session::get('role_id'), 17, 'read') || checkMenu(Session::get('role_id'), 18, 'read'))
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i><a class="sidebar-link sidebar-title link-nav"
                         href="{{ route('entries.index') }}">
-                        <svg class="stroke-icon">
-                            <use href="{{ asset('admin/assets/svg/icon-sprite.svg#stroke-support-tickets') }}"></use>
-                        </svg>
-                        <svg class="fill-icon">
-                            <use href="{{ asset("admin/assets/svg/icon-sprite.svg#stroke-user") }}"></use>
-                        </svg><span>Services</span>
-                        <div class="according-menu"><i class="fa fa-angle-right"></i></div>
-                    </a></li>
+                <svg class="stroke-icon">
+                    <use href="{{ asset('admin/assets/svg/icon-sprite.svg#stroke-support-tickets') }}"></use>
+                </svg>
+                <svg class="fill-icon">
+                    <use href="{{ asset("admin/assets/svg/icon-sprite.svg#stroke-user") }}"></use>
+                </svg><span>Services</span>
+                <div class="according-menu"><i class="fa fa-angle-right"></i></div>
+                </a></li>
                 @endif
                 @if(checkMenu(Session::get('role_id'), 19, 'read'))
                 <li class="sidebar-list d-none"><i class="fa fa-thumb-tack"></i><a
@@ -442,7 +442,7 @@
                 </li>
 
                 {{-- Leads moved to General --}}
-                
+
                 @if(checkMenu(Session::get('role_id'), 6, 'read'))
                 <li id="sidebar-products" class="sidebar-list">
                     <i class="fa fa-thumb-tack"></i><a class="sidebar-link sidebar-title link-nav"
@@ -469,19 +469,19 @@
                         </svg><span>Product Settings</span></a>
                 </li>
                 @endif
-                
+
                 {{-- Lost Orders Hidden --}}
-                {{-- 
+                {{--
                 {{--
                 @if(checkMenu(Session::get('role_id'), 9, 'read'))
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i><a class="sidebar-link sidebar-title link-nav"
                         href="{{ route('loss-orders.index') }}">
-                        <svg class="stroke-icon">
-                            <use href="{{ asset('admin/assets/svg/icon-sprite.svg#stroke-charts') }}"></use>
-                        </svg>
-                        <svg class="fill-icon">
-                            <use href="{{ asset('admin/assets/svg/icon-sprite.svg#fill-task') }}"></use>
-                        </svg><span>Lost Orders</span></a></li>
+                <svg class="stroke-icon">
+                    <use href="{{ asset('admin/assets/svg/icon-sprite.svg#stroke-charts') }}"></use>
+                </svg>
+                <svg class="fill-icon">
+                    <use href="{{ asset('admin/assets/svg/icon-sprite.svg#fill-task') }}"></use>
+                </svg><span>Lost Orders</span></a></li>
 
 
                 @endif
@@ -489,17 +489,17 @@
                 --}}
 
                 {{-- Pipeline Hidden --}}
-                {{-- 
+                {{--
                 {{--
                 @if(checkMenu(Session::get('role_id'), 10, 'read'))
                 <li class="sidebar-list"><i class="fa fa-thumb-tack"></i><a class="sidebar-link sidebar-title link-nav"
                         href="{{ route('pipelines.index') }}">
-                        <svg class="stroke-icon">
-                            <use href="{{ asset('admin/assets/svg/icon-sprite.svg#stroke-layout') }}"></use>
-                        </svg>
-                        <svg class="fill-icon">
-                            <use href="{{ asset('admin/assets/svg/icon-sprite.svg#fill-task') }}"></use>
-                        </svg><span>Pipeline</span></a></li>
+                <svg class="stroke-icon">
+                    <use href="{{ asset('admin/assets/svg/icon-sprite.svg#stroke-layout') }}"></use>
+                </svg>
+                <svg class="fill-icon">
+                    <use href="{{ asset('admin/assets/svg/icon-sprite.svg#fill-task') }}"></use>
+                </svg><span>Pipeline</span></a></li>
                 @endif
                 --}}
                 --}}
@@ -739,42 +739,7 @@
 @push('scripts')
 <script>
     $(document).ready(function() {
-        // Clear any previous interval to prevent duplication
-        if (window.logoSlideshowInterval) {
-            clearInterval(window.logoSlideshowInterval);
-        }
-
-        const images = [
-            "{{ asset('admin/assets/images/logo/logo-white.png') }}",
-            "{{ asset('admin/assets/images/logo/svhe.png') }}"
-        ];
-
-        // Preload images to avoid flickering
-        images.forEach(url => new Image().src = url);
-
-        function rotateLogo() {
-            const $logos = $('.slideshow-logo');
-            if ($logos.length === 0) return;
-
-            // Determine next image based on the current src of the first logo
-            const currentSrc = $logos.first().attr('src') || "";
-            // If current is logo-white, pick svhe. Otherwise pick logo-white.
-            const nextUrl = currentSrc.includes('logo-white.png') ? images[1] : images[0];
-
-            $logos.animate({
-                opacity: 0,
-                marginLeft: '-30px'
-            }, 500, function() {
-                $(this).attr('src', nextUrl)
-                    .css('marginLeft', '30px')
-                    .animate({
-                        opacity: 1,
-                        marginLeft: '0px'
-                    }, 500);
-            });
-        }
-
-        window.logoSlideshowInterval = setInterval(rotateLogo, 4000);
+        // Sidebar logic (if any)
     });
 </script>
 @endpush
