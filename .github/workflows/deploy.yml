@@ -65,7 +65,7 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./
-          server-dir: /public_html/crm/ # Adjust to your server path
+          server-dir: / # Adjust to your server path
           exclude: |
             **/.git*
             **/.git*/**
