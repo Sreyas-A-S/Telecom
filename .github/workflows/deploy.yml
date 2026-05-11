@@ -38,7 +38,7 @@ jobs:
           coverage: none
 
       - name: 📦 Install Composer Dependencies
-        run: composer install --no-dev --optimize-autoloader
+        run: composer install --no-dev --optimize-autoloader --ignore-platform-reqs
 
       - name: 🛠️ Prepare Application
         run: |
