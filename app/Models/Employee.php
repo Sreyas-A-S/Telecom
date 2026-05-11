@@ -208,5 +208,15 @@ if (!class_exists('App\Models\Employee')) {
         {
             return $this->belongsTo(EmployeeImport::class, 'import_id', 'id');
         }
+
+        public function agentSession(): \Illuminate\Database\Eloquent\Relations\HasOne
+        {
+            return $this->hasOne(AgentSession::class);
+        }
+
+        public function clocks(): HasMany
+        {
+            return $this->hasMany(Clock::class);
+        }
     }
 }

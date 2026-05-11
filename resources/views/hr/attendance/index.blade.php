@@ -22,6 +22,12 @@
 @endsection
 
 @section('content')
+<style>
+    .live-status-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1) !important;
+    }
+</style>
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-12">
@@ -56,7 +62,6 @@
                                 <div class="col-12">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <h6 class="text-muted">Real-time Employee Availability</h6>
-                                        <div class="badge badge-light-primary" id="last-updated-badge">Last updated: Just now</div>
                                     </div>
                                 </div>
                             </div>
@@ -239,6 +244,8 @@
 <script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&libraries=marker"></script>
 <script>
     $(document).ready(function() {
+        const currentEmployeeId = {{ auth()->user()->employee->id ?? 'null' }};
+
         // Live Status Logic
         function fetchLiveStatus() {
             $.ajax({
@@ -246,7 +253,6 @@
                 method: 'GET',
                 success: function(data) {
                     renderLiveStatus(data);
-                    $('#last-updated-badge').text('Last updated: ' + new Date().toLocaleTimeString());
                 },
                 error: function(xhr) {
                     console.error('Error fetching live status:', xhr);
@@ -290,9 +296,11 @@
                     attendanceBadge = '<span class="badge badge-light-danger border-danger text-danger">Absent</span>';
                 }
 
+                const isYou = employee.id === currentEmployeeId ? ' <span class="badge badge-light-primary" style="font-size: 10px; vertical-align: middle;">(You)</span>' : '';
+
                 const card = `
                     <div class="col-xl-3 col-md-4 col-sm-6 mb-4">
-                        <div class="card h-100 mb-0 shadow-sm border-0" style="border-radius: 15px; transition: transform 0.2s;">
+                        <div class="card h-100 mb-0 shadow-sm border-0 live-status-card" style="border-radius: 15px; transition: all 0.3s ease; ${employee.id === currentEmployeeId ? 'border: 1.5px solid #7366ff !important; box-shadow: 0 15px 35px rgba(115, 102, 255, 0.15) !important; transform: translateY(-5px);' : 'box-shadow: 0 5px 15px rgba(0,0,0,0.05) !important;'}">
                             <div class="card-body p-3">
                                 <div class="d-flex align-items-center mb-3">
                                     <div class="position-relative">
@@ -300,7 +308,7 @@
                                         <span class="position-absolute bottom-0 end-0 translate-middle p-1 rounded-circle ${employee.agent_status === 'available' ? 'bg-success' : (employee.agent_status === 'busy' ? 'bg-warning' : 'bg-secondary')}" style="width: 12px; height: 12px; border: 2px solid #fff;"></span>
                                     </div>
                                     <div class="ms-3 overflow-hidden">
-                                        <h6 class="mb-0 text-truncate f-w-600">${employee.name}</h6>
+                                        <h6 class="mb-0 text-truncate f-w-600">${employee.name}${isYou}</h6>
                                         <small class="text-muted text-truncate d-block">${employee.designation || 'Employee'}</small>
                                     </div>
                                 </div>
@@ -325,7 +333,7 @@
         }
 
         fetchLiveStatus();
-        setInterval(fetchLiveStatus, 10000); // Poll every 10 seconds
+        setInterval(fetchLiveStatus, 4000); // Poll every 4 seconds
 
         // Existing Attendance Log Logic
         var table = $('#attendance-table').DataTable({
