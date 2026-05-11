@@ -274,6 +274,7 @@ Route::middleware(['auth'])->group(function () {
         ]);
     })->name('db.backup');
 
+
     // Package Kits
     Route::get('service-kits/datatable', [PackageKitController::class, 'getDataTableData'])->name('service-kits.datatable');
     Route::resource('service-kits', PackageKitController::class)->only(['index', 'store', 'show', 'update', 'destroy'])->names('service-kits');
@@ -552,6 +553,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/calls/start-outbound', [CallController::class, 'startOutboundCall'])->name('calls.start-outbound');
     Route::post('/calls/{call}/answer', [CallController::class, 'answerCall'])->name('calls.answer');
     Route::post('/calls/{call}/end', [CallController::class, 'endCall'])->name('calls.end');
+    Route::get('/calls/console', [CallController::class, 'console'])->name('calls.console');
 });
 
 // Terminal (Protected by static password in controller)

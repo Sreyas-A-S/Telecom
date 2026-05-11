@@ -237,4 +237,8 @@ class CallController extends Controller
 
         return response('OK', 200);
     }
+    public function console()
+    {
+        return view('calls.console');
+    }
 }
