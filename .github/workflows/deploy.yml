@@ -70,6 +70,7 @@ jobs:
             **/.git*
             **/.git*/**
             **/node_modules/**
+            **/vendor/**
             .env
             tests/**
             storage/logs/*
