@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Lead;
 use App\Models\Client;
+use App\Models\Call;
 use App\Models\Employee;
 use App\Models\User;
 use App\Models\Followup;
@@ -98,6 +99,72 @@ class DashboardController extends Controller
             ->orderByDesc('package_kits_count')
             ->limit(5)
             ->get();
+
+        // Call Center Specific Metrics
+        $today = Carbon::today();
+        
+        $leadsToday = Lead::when($userDealershipId, function ($query) use ($userDealershipId) {
+            return $query->where('dealership_id', $userDealershipId);
+        })->whereDate('created_at', $today)->count();
+
+        $convertedToday = Lead::when($userDealershipId, function ($query) use ($userDealershipId) {
+            return $query->where('dealership_id', $userDealershipId);
+        })->where('status', 'Converted') // Adjust status name if different
+          ->whereDate('updated_at', $today)->count();
+
+        $callsToday = Call::whereDate('created_at', $today)->count();
+        $inboundCallsToday = Call::where('direction', 'inbound')->whereDate('created_at', $today)->count();
+        $outboundCallsToday = Call::where('direction', 'outbound')->whereDate('created_at', $today)->count();
+        $missedCallsToday = Call::whereIn('status', ['no-answer', 'failed', 'busy'])->whereDate('created_at', $today)->count();
+        
+        $followupsDueToday = Followup::whereDate('next_follow_up_date', $today)->count();
+
+        $avgCallDuration = Call::whereDate('created_at', $today)
+            ->whereNotNull('end_time')
+            ->whereNotNull('start_time')
+            ->selectRaw('AVG(TIMESTAMPDIFF(SECOND, start_time, end_time)) as avg_duration')
+            ->first()
+            ->avg_duration ?? 0;
+        
+        $avgCallDuration = round($avgCallDuration / 60, 1); // convert to minutes
+
+        $totalCallDuration = Call::whereDate('created_at', $today)
+            ->whereNotNull('end_time')
+            ->whereNotNull('start_time')
+            ->selectRaw('SUM(TIMESTAMPDIFF(SECOND, start_time, end_time)) as total_duration')
+            ->first()
+            ->total_duration ?? 0;
+        
+        $totalCallDuration = round($totalCallDuration / 60, 1); // convert to minutes
+
+        $agentPerformance = Agent::with(['employee'])
+            ->when($userDealershipId, function ($query) use ($userDealershipId) {
+                return $query->where('dealership_id', $userDealershipId);
+            })
+            ->get()
+            ->map(function ($agent) use ($today) {
+                $calls = Call::where('caller_user_id', $agent->user_id)
+                    ->orWhere('receiver_user_id', $agent->user_id)
+                    ->whereDate('created_at', $today)
+                    ->count();
+                
+                $conversions = Lead::where('agent_id', $agent->id)
+                    ->where('status', 'Converted')
+                    ->whereDate('updated_at', $today)
+                    ->count();
+
+                $session = \App\Models\AgentSession::where('employee_id', $agent->employee_id)->first();
+
+                return [
+                    'name' => $agent->name,
+                    'status' => $session->status ?? 'offline',
+                    'calls' => $calls,
+                    'conversions' => $conversions
+                ];
+            });
+
+        $activeAgentsCount = \App\Models\AgentSession::where('status', 'available')->count();
+
 
         $topPackageKits = (clone $packageKitsBaseQuery)->withCount('parts')
             ->orderByDesc('parts_count')
@@ -202,7 +269,16 @@ class DashboardController extends Controller
             $myTaskTypeCounts = [];
         }
 
-        return view('dashboard', compact('userDealershipId', 'totalLeads', 'totalAgents', 'totalEmployees', 'totalClients', 'userDepartment', 'totalServices', 'totalServiceEngineers', 'totalClientsOnServices', 'totalProductsOnServices', 'totalParts', 'totalPackageKits', 'totalProductsWithParts', 'totalModelSeriesWithParts', 'topSellingParts', 'topPackageKits', 'partsSalesData', 'partsSalesLabels', 'stockStatusCounts', 'myTotalTasks', 'myPendingTasks', 'myCompletedTasks', 'myAttendanceCount', 'myTaskStatusCounts', 'myWeeklyAttendance', 'myWeeklyAttendanceLabels', 'myMonthlyCompletionData', 'myMonthlyCompletionLabels', 'myTaskTypeCounts'));
+        return view('dashboard', compact(
+            'userDealershipId', 'totalLeads', 'totalAgents', 'totalEmployees', 'totalClients', 'userDepartment', 
+            'totalServices', 'totalServiceEngineers', 'totalClientsOnServices', 'totalProductsOnServices', 
+            'totalParts', 'totalPackageKits', 'totalProductsWithParts', 'totalModelSeriesWithParts', 
+            'topSellingParts', 'topPackageKits', 'partsSalesData', 'partsSalesLabels', 'stockStatusCounts', 
+            'myTotalTasks', 'myPendingTasks', 'myCompletedTasks', 'myAttendanceCount', 'myTaskStatusCounts', 
+            'myWeeklyAttendance', 'myWeeklyAttendanceLabels', 'myMonthlyCompletionData', 'myMonthlyCompletionLabels', 'myTaskTypeCounts',
+            'leadsToday', 'convertedToday', 'callsToday', 'inboundCallsToday', 'outboundCallsToday', 'agentPerformance', 'activeAgentsCount',
+            'missedCallsToday', 'followupsDueToday', 'avgCallDuration', 'totalCallDuration'
+        ));
     }
 
     public function topContributors(Request $request)

@@ -188,6 +188,219 @@ Dashboard - KORPS
 <div class="container-fluid">
     <div class="row">
         <div class="col-12 mb-3">
+            <h5>Call Center Dashboard</h5>
+        </div>
+        
+        <!-- Call Center Summary Cards -->
+        <div class="col-xl-3 col-sm-6">
+            <div class="card o-hidden small-widget h-100">
+                <div class="card-body total-project border-b-primary border-2">
+                    <span class="f-light f-w-500 f-14">Leads Today</span>
+                    <div class="project-details">
+                        <div class="project-counter">
+                            <h2 class="f-w-600">{{ $leadsToday }}</h2>
+                            <span class="f-12 f-w-400">Total incoming leads today</span>
+                        </div>
+                        <div class="product-sub bg-primary-light">
+                            <i class="fa fa-user-plus text-primary f-20"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-sm-6">
+            <div class="card o-hidden small-widget h-100">
+                <div class="card-body total-Progress border-b-warning border-2">
+                    <span class="f-light f-w-500 f-14">Converted Today</span>
+                    <div class="project-details">
+                        <div class="project-counter">
+                            <h2 class="f-w-600">{{ $convertedToday }}</h2>
+                            <span class="f-12 f-w-400">Successfully converted today</span>
+                        </div>
+                        <div class="product-sub bg-warning-light">
+                            <i class="fa fa-check-circle text-warning f-20"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-sm-6">
+            <div class="card o-hidden small-widget h-100">
+                <div class="card-body total-Complete border-b-secondary border-2">
+                    <span class="f-light f-w-500 f-14">Total Calls Today</span>
+                    <div class="project-details">
+                        <div class="project-counter">
+                            <h2 class="f-w-600">{{ $callsToday }}</h2>
+                            <span class="f-12 f-w-400">Inbound: {{ $inboundCallsToday }} | Outbound: {{ $outboundCallsToday }}</span>
+                        </div>
+                        <div class="product-sub bg-secondary-light">
+                            <i class="fa fa-phone text-secondary f-20"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-sm-6">
+            <div class="card o-hidden small-widget h-100">
+                <div class="card-body total-upcoming border-b-success border-2">
+                    <span class="f-light f-w-500 f-14">Active Agents</span>
+                    <div class="project-details">
+                        <div class="project-counter">
+                            <h2 class="f-w-600">{{ $activeAgentsCount }}</h2>
+                            <span class="f-12 f-w-400">Agents currently available</span>
+                        </div>
+                        <div class="product-sub bg-success-light">
+                            <i class="fa fa-users text-success f-20"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Second Row of Summary Cards -->
+        <div class="col-xl-3 col-sm-6">
+            <div class="card o-hidden small-widget h-100">
+                <div class="card-body total-project border-b-danger border-2">
+                    <span class="f-light f-w-500 f-14">Missed Calls Today</span>
+                    <div class="project-details">
+                        <div class="project-counter">
+                            <h2 class="f-w-600">{{ $missedCallsToday }}</h2>
+                            <span class="f-12 f-w-400">Calls with no answer or failed</span>
+                        </div>
+                        <div class="product-sub bg-danger-light">
+                            <i class="fa fa-phone-square text-danger f-20"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-sm-6">
+            <div class="card o-hidden small-widget h-100">
+                <div class="card-body total-Progress border-b-info border-2">
+                    <span class="f-light f-w-500 f-14">Follow-ups Due Today</span>
+                    <div class="project-details">
+                        <div class="project-counter">
+                            <h2 class="f-w-600">{{ $followupsDueToday }}</h2>
+                            <span class="f-12 f-w-400">Follow-ups scheduled for today</span>
+                        </div>
+                        <div class="product-sub bg-info-light">
+                            <i class="fa fa-calendar-check-o text-info f-20"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-sm-6">
+            <div class="card o-hidden small-widget h-100">
+                <div class="card-body total-Complete border-b-warning border-2">
+                    <span class="f-light f-w-500 f-14">Avg Call Duration</span>
+                    <div class="project-details">
+                        <div class="project-counter">
+                            <h2 class="f-w-600">{{ $avgCallDuration }} <small class="f-14">min</small></h2>
+                            <span class="f-12 f-w-400">Average time per call today</span>
+                        </div>
+                        <div class="product-sub bg-warning-light">
+                            <i class="fa fa-clock-o text-warning f-20"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-sm-6">
+            <div class="card o-hidden small-widget h-100">
+                <div class="card-body total-upcoming border-b-primary border-2">
+                    <span class="f-light f-w-500 f-14">Total Call Time</span>
+                    <div class="project-details">
+                        <div class="project-counter">
+                            <h2 class="f-w-600">{{ $totalCallDuration }} <small class="f-14">min</small></h2>
+                            <span class="f-12 f-w-400">Total duration of all calls today</span>
+                        </div>
+                        <div class="product-sub bg-primary-light">
+                            <i class="fa fa-hourglass-half text-primary f-20"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Agent Performance Table -->
+        <div class="col-xl-7 col-md-12">
+            <div class="card h-100">
+                <div class="card-header card-no-border pb-0">
+                    <div class="header-top">
+                        <h4>Agent Performance (Today)</h4>
+                    </div>
+                </div>
+                <div class="card-body pt-0">
+                    <div class="table-responsive">
+                        <table class="table table-bordernone">
+                            <thead>
+                                <tr>
+                                    <th>Agent Name</th>
+                                    <th>Status</th>
+                                    <th>Calls</th>
+                                    <th>Conversions</th>
+                                    <th>Success Rate</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($agentPerformance as $agent)
+                                <tr>
+                                    <td>{{ $agent['name'] }}</td>
+                                    <td>
+                                        <span class="badge {{ $agent['status'] == 'available' ? 'badge-light-success' : 'badge-light-danger' }}">
+                                            {{ ucfirst($agent['status']) }}
+                                        </span>
+                                    </td>
+                                    <td>{{ $agent['calls'] }}</td>
+                                    <td>{{ $agent['conversions'] }}</td>
+                                    <td>
+                                        {{ $agent['calls'] > 0 ? round(($agent['conversions'] / $agent['calls']) * 100, 1) : 0 }}%
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Call Distribution Chart Placeholder -->
+        <div class="col-xl-5 col-md-12">
+            <div class="card h-100">
+                <div class="card-header card-no-border pb-0">
+                    <div class="header-top">
+                        <h4>Call Distribution</h4>
+                    </div>
+                </div>
+                <div class="card-body d-flex flex-column justify-content-center">
+                    <div id="call-distribution-chart"></div>
+                    <div class="text-center mt-3">
+                        <span class="me-3"><i class="fa fa-circle text-primary"></i> Inbound</span>
+                        <span><i class="fa fa-circle text-secondary"></i> Outbound</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endif
+
+@if(auth()->user()->user_type === 'admin' || $userDepartment === 'Sales' || $userDealershipId == null)
+<!-- Container-fluid starts-->
+{{-- 
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 mb-3">
             <h5>Leads Dashboard</h5>
         </div>
         <div class="col-12">
@@ -426,6 +639,7 @@ Dashboard - KORPS
         </div>
     </div>
 </div>
+--}}
 @endif
 
 {{-- 
@@ -439,6 +653,52 @@ Dashboard - KORPS
 --}}
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script>
+    $(document).ready(function() {
+        // Call Distribution Chart
+        const inbound = {{ $inboundCallsToday }};
+        const outbound = {{ $outboundCallsToday }};
+        const chartContainer = document.querySelector("#call-distribution-chart");
+
+        if (inbound > 0 || outbound > 0) {
+            var options = {
+                series: [inbound, outbound],
+                chart: {
+                    type: 'donut',
+                    height: 300
+                },
+                labels: ['Inbound', 'Outbound'],
+                colors: ['#7366ff', '#f73164'],
+                responsive: [{
+                    breakpoint: 480,
+                    options: {
+                        chart: {
+                            width: 200
+                        },
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }]
+            };
+
+            var chart = new ApexCharts(chartContainer, options);
+            chart.render();
+        } else {
+            chartContainer.innerHTML = `
+                <div class="text-center py-5">
+                    <i class="fa fa-phone text-muted f-30 mb-2"></i>
+                    <p class="text-muted">No call data available for today</p>
+                </div>
+            `;
+            // Hide the legend text if no data
+            if (chartContainer.nextElementSibling) {
+                chartContainer.nextElementSibling.classList.add('d-none');
+            }
+        }
+    });
+</script>
 <script src="{{ asset('admin/assets/js/dashboard/dashboard_2.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>

@@ -1,5 +1,5 @@
         <!-- footer start-->
-        <footer class="footer" style="margin-left: 0; width: 100%;">
+        <footer class="footer" style="margin-left: 0; width: 100%; margin-top: 30px;">
             <div class="container-fluid" style="max-width:100%; padding-left:0; padding-right:0;">
                 <div class="row">
                     <div class="col-12 text-center" style="padding:0;">
