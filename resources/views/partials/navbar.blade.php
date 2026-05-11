@@ -549,6 +549,44 @@
     </div>
 </div>
 
+<!-- Confirm Call Modal -->
+<div class="modal fade" id="confirmCallModal" tabindex="-1" aria-labelledby="confirmCallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmCallModalLabel">Confirm Call</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-dark">
+                Are you sure you want to call <strong id="confirm-call-phone"></strong>?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="window.exotelService.confirmDialLead()">Call</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirm Hangup Modal -->
+<div class="modal fade" id="confirmHangupModal" tabindex="-1" aria-labelledby="confirmHangupModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmHangupModalLabel">Confirm Hang Up</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-dark">
+                Are you sure you want to end the active call?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" onclick="window.exotelService.confirmEndCall()">Hang Up</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <style>
     .animate-ringing {
         animation: ringing 1s infinite;
