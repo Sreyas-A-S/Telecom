@@ -160,14 +160,18 @@ class CallController extends Controller
         $subdomain = $config['subdomain'] ?: 'api.exotel.com';
         $virtualNumber = $config['virtual_number'];
 
-        // Exotel 'Connect' API: Connects the WebRTC Agent (From) to the Customer (To)
-        // For WebRTC agents, 'From' is their SIP Identity: agentId
-        // Exotel will then send an INVITE to the registered WebRTC client.
+        if (!$employee->mobile) {
+            return response()->json(['error' => 'Agent mobile number not found. Please update your profile.'], 422);
+        }
+
+        // Exotel 'Connect' API: Connects the Agent (From) to the Customer (To)
+        // For PSTN agents, 'From' is their mobile number.
         
-        $response = \Illuminate\Support\Facades\Http::withBasicAuth($apiKey, $apiToken)
+        $response = \Illuminate\Support\Facades\Http::withoutVerifying()
+            ->withBasicAuth($apiKey, $apiToken)
             ->asForm()
-            ->post("https://{$subdomain}/v1/Accounts/{$accountSid}/Calls/connect.json", [
-                'From' => $employee->employee_id, // The WebRTC agent identity
+            ->post("https://api.exotel.com/v1/Accounts/{$accountSid}/Calls/connect.json", [
+                'From' => $employee->mobile, 
                 'To' => $request->phone_number,
                 'CallerId' => $virtualNumber,
                 'StatusCallback' => route('api.exotel.callback'),
