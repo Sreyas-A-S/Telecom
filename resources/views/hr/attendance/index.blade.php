@@ -36,6 +36,44 @@
                     </div>
                 </div>
                 <div class="card-body">
+                    <ul class="nav nav-tabs nav-primary mb-4" id="attendanceTabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="live-status-tab" data-bs-toggle="tab" href="#live-status" role="tab" aria-controls="live-status" aria-selected="true">
+                                <i class="icofont icofont-ui-play me-2"></i>Live Status
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="attendance-log-tab" data-bs-toggle="tab" href="#attendance-log" role="tab" aria-controls="attendance-log" aria-selected="false">
+                                <i class="icofont icofont-list me-2"></i>Attendance Log
+                            </a>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="attendanceTabsContent">
+                        <!-- Live Status Tab -->
+                        <div class="tab-pane fade show active" id="live-status" role="tabpanel" aria-labelledby="live-status-tab">
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h6 class="text-muted">Real-time Employee Availability</h6>
+                                        <div class="badge badge-light-primary" id="last-updated-badge">Last updated: Just now</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" id="live-status-container">
+                                <!-- Live status cards will be loaded here -->
+                                <div class="col-12 text-center py-5">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading status...</span>
+                                    </div>
+                                    <p class="mt-2 text-muted">Fetching live status...</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Attendance Log Tab -->
+                        <div class="tab-pane fade" id="attendance-log" role="tabpanel" aria-labelledby="attendance-log-tab">
+
                     <div class="row mb-3">
                         <div class="col-md-2">
                             <label for="date-filter">Date</label>
@@ -103,9 +141,9 @@
                             </thead>
                         </table>
                     </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
     </div>
 </div>
 <!-- Export Attendance Modal -->
@@ -201,6 +239,95 @@
 <script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&libraries=marker"></script>
 <script>
     $(document).ready(function() {
+        // Live Status Logic
+        function fetchLiveStatus() {
+            $.ajax({
+                url: "{{ route('attendance.live-status') }}",
+                method: 'GET',
+                success: function(data) {
+                    renderLiveStatus(data);
+                    $('#last-updated-badge').text('Last updated: ' + new Date().toLocaleTimeString());
+                },
+                error: function(xhr) {
+                    console.error('Error fetching live status:', xhr);
+                }
+            });
+        }
+
+        function renderLiveStatus(employees) {
+            const container = $('#live-status-container');
+            container.empty();
+
+            if (employees.length === 0) {
+                container.append('<div class="col-12 text-center py-5"><p class="text-muted">No employees found.</p></div>');
+                return;
+            }
+
+            employees.forEach(employee => {
+                let agentStatusBadge = '';
+                switch(employee.agent_status.toLowerCase()) {
+                    case 'available':
+                        agentStatusBadge = '<span class="badge badge-success">Online</span>';
+                        break;
+                    case 'busy':
+                        agentStatusBadge = '<span class="badge badge-warning">On Call</span>';
+                        break;
+                    case 'connecting':
+                        agentStatusBadge = '<span class="badge badge-info">Connecting</span>';
+                        break;
+                    default:
+                        agentStatusBadge = '<span class="badge badge-secondary">Offline</span>';
+                }
+
+                let attendanceBadge = '';
+                if (employee.attendance_status === 'Present') {
+                    attendanceBadge = '<span class="badge badge-light-success border-success text-success">Present</span>';
+                } else if (employee.attendance_status === 'On Leave') {
+                    attendanceBadge = '<span class="badge badge-light-warning border-warning text-warning">On Leave</span>';
+                } else if (employee.attendance_status === 'Present (Comp)') {
+                    attendanceBadge = '<span class="badge badge-light-info border-info text-info">Comp. Work</span>';
+                } else {
+                    attendanceBadge = '<span class="badge badge-light-danger border-danger text-danger">Absent</span>';
+                }
+
+                const card = `
+                    <div class="col-xl-3 col-md-4 col-sm-6 mb-4">
+                        <div class="card h-100 mb-0 shadow-sm border-0" style="border-radius: 15px; transition: transform 0.2s;">
+                            <div class="card-body p-3">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="position-relative">
+                                        <img src="${employee.profile_pic}" alt="${employee.name}" class="rounded-circle shadow-sm" style="width: 50px; height: 50px; object-fit: cover; border: 2px solid #fff;">
+                                        <span class="position-absolute bottom-0 end-0 translate-middle p-1 rounded-circle ${employee.agent_status === 'available' ? 'bg-success' : (employee.agent_status === 'busy' ? 'bg-warning' : 'bg-secondary')}" style="width: 12px; height: 12px; border: 2px solid #fff;"></span>
+                                    </div>
+                                    <div class="ms-3 overflow-hidden">
+                                        <h6 class="mb-0 text-truncate f-w-600">${employee.name}</h6>
+                                        <small class="text-muted text-truncate d-block">${employee.designation || 'Employee'}</small>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <small class="f-w-600 text-muted">Attendance</small>
+                                    ${attendanceBadge}
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <small class="f-w-600 text-muted">Call Status</small>
+                                    ${agentStatusBadge}
+                                </div>
+                                <div class="border-top pt-2 d-flex justify-content-between">
+                                    <small class="text-muted f-11">Last Activity</small>
+                                    <small class="text-muted f-11 f-w-600">${employee.last_activity}</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.append(card);
+            });
+        }
+
+        fetchLiveStatus();
+        setInterval(fetchLiveStatus, 10000); // Poll every 10 seconds
+
+        // Existing Attendance Log Logic
         var table = $('#attendance-table').DataTable({
             processing: true,
             serverSide: true,

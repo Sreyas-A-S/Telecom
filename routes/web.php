@@ -203,6 +203,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/attendance/calendar', [AttendanceController::class, 'calendar'])->name('attendance.calendar');
     Route::get('/attendance/calendar-events', [AttendanceController::class, 'getCalendarEvents'])->name('attendance.calendar-events');
+    Route::get('/attendance/live-status', [AttendanceController::class, 'getLiveStatus'])->name('attendance.live-status');
     Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
     Route::get('/attendance/{employeeId}', [AttendanceController::class, 'show'])->name('attendance.show');
 

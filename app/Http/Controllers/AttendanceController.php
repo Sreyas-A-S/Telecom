@@ -9,6 +9,7 @@ use App\Models\Task;
 use App\Models\LeaveRequest;
 use App\Models\Dealership;
 use App\Models\Department;
+use App\Models\AgentSession;
 use Carbon\Carbon;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -379,6 +380,81 @@ class AttendanceController extends Controller
         $seconds = $totalSeconds % 60;
 
         return sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+    }
+
+    public function getLiveStatus(Request $request)
+    {
+        $user = auth()->user();
+        $userEmployee = $user->employee;
+        $roleId = session('role_id') ?? ($userEmployee ? $userEmployee->role_id : null);
+        $canViewSubordinates = checkMenu($roleId, 36, 'read');
+        $canViewAllAttendance = checkMenu($roleId, 37, 'read');
+
+        $employeesQuery = Employee::with(['agentSession', 'clocks' => function ($q) {
+            $q->whereDate('clock_in_time', Carbon::today());
+        }, 'department']);
+
+        if (!$canViewSubordinates && !$canViewAllAttendance) {
+            $employeesQuery->where('id', $userEmployee->id ?? 0);
+        } elseif (!$canViewAllAttendance) {
+            if ($userEmployee && $userEmployee->dealership_id) {
+                $employeesQuery->where('dealership_id', $userEmployee->dealership_id);
+            }
+        }
+
+        $employees = $employeesQuery->get();
+        $date = Carbon::today()->toDateString();
+
+        $data = $employees->map(function ($employee) use ($date) {
+            $clock = $employee->clocks->first();
+            $session = $employee->agentSession;
+
+            // Attendance Status Logic (matching index method)
+            $leave = LeaveRequest::whereHas('user', function ($q) use ($employee) {
+                $q->where('id', $employee->user_id);
+            })
+                ->where('status', 'approved')
+                ->whereDate('start_date', '<=', $date)
+                ->whereDate('end_date', '>=', $date)
+                ->first();
+
+            $attendanceStatus = 'Absent';
+            if ($clock) {
+                $attendanceStatus = 'Present';
+            } elseif ($leave) {
+                $attendanceStatus = 'On Leave';
+            } else {
+                $compensatoryWork = LeaveRequest::whereHas('user', function ($q) use ($employee) {
+                    $q->where('id', $employee->user_id);
+                })
+                    ->where('status', 'approved')
+                    ->where('is_compensatory', true)
+                    ->whereDate('compensatory_date', $date)
+                    ->first();
+
+                if ($compensatoryWork) {
+                    $attendanceStatus = 'Present (Comp)';
+                }
+            }
+
+            $agentStatus = 'offline';
+            if ($session) {
+                $agentStatus = $session->status;
+            }
+
+            return [
+                'id' => $employee->id,
+                'name' => $employee->name,
+                'profile_pic' => $employee->profile_pic ? asset('storage/' . $employee->profile_pic) : asset('admin/assets/images/dashboard/profile.png'),
+                'department' => $employee->department ? $employee->department->name : 'N/A',
+                'designation' => $employee->designation,
+                'attendance_status' => $attendanceStatus,
+                'agent_status' => $agentStatus,
+                'last_activity' => $session ? $session->last_activity->diffForHumans() : 'N/A',
+            ];
+        });
+
+        return response()->json($data);
     }
 
     public function show(Request $request, $employeeId)

@@ -28,7 +28,7 @@ Dashboard - KORPS
     </div>
     <div class="row">
         <!-- My Total Tasks -->
-        <div class="col-xl-3 col-sm-6">
+        <div class="col-xl-3 col-sm-6 mb-4">
             <div class="card o-hidden small-widget">
                 <div class="card-body total-project border-b-primary border-2">
                     <span class="f-light f-w-500 f-14">My Total Tasks</span>
@@ -47,7 +47,7 @@ Dashboard - KORPS
             </div>
         </div>
         <!-- My Pending Tasks -->
-        <div class="col-xl-3 col-sm-6">
+        <div class="col-xl-3 col-sm-6 mb-4">
             <div class="card o-hidden small-widget">
                 <div class="card-body total-Progress border-b-danger border-2">
                     <span class="f-light f-w-500 f-14">My Pending Tasks</span>
@@ -66,7 +66,7 @@ Dashboard - KORPS
             </div>
         </div>
         <!-- My Completed Tasks -->
-        <div class="col-xl-3 col-sm-6">
+        <div class="col-xl-3 col-sm-6 mb-4">
             <div class="card o-hidden small-widget">
                 <div class="card-body total-Complete border-b-success border-2">
                     <span class="f-light f-w-500 f-14">My Completed Tasks</span>
@@ -85,7 +85,7 @@ Dashboard - KORPS
             </div>
         </div>
         <!-- My Attendance -->
-        <div class="col-xl-3 col-sm-6">
+        <div class="col-xl-3 col-sm-6 mb-4">
             <div class="card o-hidden small-widget">
                 <div class="card-body total-upcoming border-b-secondary border-2">
                     <span class="f-light f-w-500 f-14">Attendance (This Month)</span>
@@ -187,12 +187,12 @@ Dashboard - KORPS
 <!-- Container-fluid starts-->
 <div class="container-fluid">
     <div class="row">
-        <div class="col-12 mb-3">
+        <div class="col-12 mb-4">
             <h5>Call Center Dashboard</h5>
         </div>
         
         <!-- Call Center Summary Cards -->
-        <div class="col-xl-3 col-sm-6">
+        <div class="col-xl-3 col-sm-6 mb-4">
             <div class="card o-hidden small-widget h-100">
                 <div class="card-body total-project border-b-primary border-2">
                     <span class="f-light f-w-500 f-14">Leads Today</span>
@@ -209,7 +209,7 @@ Dashboard - KORPS
             </div>
         </div>
 
-        <div class="col-xl-3 col-sm-6">
+        <div class="col-xl-3 col-sm-6 mb-4">
             <div class="card o-hidden small-widget h-100">
                 <div class="card-body total-Progress border-b-warning border-2">
                     <span class="f-light f-w-500 f-14">Converted Today</span>
@@ -226,7 +226,7 @@ Dashboard - KORPS
             </div>
         </div>
 
-        <div class="col-xl-3 col-sm-6">
+        <div class="col-xl-3 col-sm-6 mb-4">
             <div class="card o-hidden small-widget h-100">
                 <div class="card-body total-Complete border-b-secondary border-2">
                     <span class="f-light f-w-500 f-14">Total Calls Today</span>
@@ -243,7 +243,7 @@ Dashboard - KORPS
             </div>
         </div>
 
-        <div class="col-xl-3 col-sm-6">
+        <div class="col-xl-3 col-sm-6 mb-4">
             <div class="card o-hidden small-widget h-100">
                 <div class="card-body total-upcoming border-b-success border-2">
                     <span class="f-light f-w-500 f-14">Active Agents</span>
@@ -261,7 +261,7 @@ Dashboard - KORPS
         </div>
 
         <!-- Second Row of Summary Cards -->
-        <div class="col-xl-3 col-sm-6">
+        <div class="col-xl-3 col-sm-6 mb-4">
             <div class="card o-hidden small-widget h-100">
                 <div class="card-body total-project border-b-danger border-2">
                     <span class="f-light f-w-500 f-14">Missed Calls Today</span>
@@ -278,7 +278,7 @@ Dashboard - KORPS
             </div>
         </div>
 
-        <div class="col-xl-3 col-sm-6">
+        <div class="col-xl-3 col-sm-6 mb-4">
             <div class="card o-hidden small-widget h-100">
                 <div class="card-body total-Progress border-b-info border-2">
                     <span class="f-light f-w-500 f-14">Follow-ups Due Today</span>
@@ -295,7 +295,7 @@ Dashboard - KORPS
             </div>
         </div>
 
-        <div class="col-xl-3 col-sm-6">
+        <div class="col-xl-3 col-sm-6 mb-4">
             <div class="card o-hidden small-widget h-100">
                 <div class="card-body total-Complete border-b-warning border-2">
                     <span class="f-light f-w-500 f-14">Avg Call Duration</span>
@@ -312,7 +312,7 @@ Dashboard - KORPS
             </div>
         </div>
 
-        <div class="col-xl-3 col-sm-6">
+        <div class="col-xl-3 col-sm-6 mb-4">
             <div class="card o-hidden small-widget h-100">
                 <div class="card-body total-upcoming border-b-primary border-2">
                     <span class="f-light f-w-500 f-14">Total Call Time</span>
@@ -332,7 +332,7 @@ Dashboard - KORPS
 
     <div class="row">
         <!-- Agent Performance Table -->
-        <div class="col-xl-7 col-md-12">
+        <div class="col-xl-7 col-md-12 mb-4">
             <div class="card h-100">
                 <div class="card-header card-no-border pb-0">
                     <div class="header-top">
@@ -375,7 +375,7 @@ Dashboard - KORPS
         </div>
 
         <!-- Call Distribution Chart Placeholder -->
-        <div class="col-xl-5 col-md-12">
+        <div class="col-xl-5 col-md-12 mb-4">
             <div class="card h-100">
                 <div class="card-header card-no-border pb-0">
                     <div class="header-top">

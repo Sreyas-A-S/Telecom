@@ -72,7 +72,10 @@
                     </div>
                     <div class="onhover-show-div p-3" style="width: 200px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
                         <h6 class="f-w-700 mb-3">Call Centre Status</h6>
-                        <button id="availability-toggle-btn" class="btn btn-outline-success btn-sm w-100" onclick="window.exotelService.toggleAvailability()">Go Online</button>
+                        <button id="availability-toggle-btn" class="btn btn-success btn-sm w-100" onclick="window.exotelService.toggleAvailability()">
+                            <span id="btn-loader" class="spinner-border spinner-border-sm me-2" role="status" style="display: none;"></span>
+                            <span id="btn-text">Go Online</span>
+                        </button>
                     </div>
                 </li>
                 <!-- <li class="onhover-dropdown">
