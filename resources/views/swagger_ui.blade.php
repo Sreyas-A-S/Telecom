@@ -33,7 +33,7 @@
         window.onload = function() {
             // Begin Swagger UI call
             const ui = SwaggerUIBundle({
-                url: "/docs/api-docs.json", // URL to your generated OpenAPI JSON
+                url: "{{ url('/docs/api-docs.json') }}", // URL to your generated OpenAPI JSON
                 dom_id: '#swagger-ui',
                 deepLinking: true,
                 presets: [
