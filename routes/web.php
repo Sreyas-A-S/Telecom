@@ -602,10 +602,21 @@ Route::get('/fresh-seed', function () {
 
 Route::get('/l5-swagger/generate', function () {
     Artisan::call('l5-swagger:generate');
-    return response()->json([
-        'message' => 'Swagger documentation generated successfully!',
-        'output' => Artisan::output()
-    ]);
+    
+    // Manually overwrite server URL in generated JSON
+    $path = storage_path('api-docs/api-docs.json');
+    if (file_exists($path)) {
+        $json = json_decode(file_get_contents($path), true);
+        $json['servers'] = [
+            [
+                'url' => config('app.url') . '/api',
+                'description' => 'API Server'
+            ]
+        ];
+        file_put_contents($path, json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+    }
+
+    return redirect()->to('/docs')->with('success', 'Swagger documentation generated and server URL updated successfully!');
 });
 
 Route::post('/exotel/callback', [CallController::class, 'handleExotelCallback'])->name('api.exotel.callback');
