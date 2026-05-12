@@ -23,7 +23,7 @@ use OpenApi\Annotations as OA;
  * )
  *
  * @OA\Server(
- *      url="http://127.0.0.1:8000/api",
+ *      url=L5_SWAGGER_CONST_HOST,
  *      description="API Server"
  * )
  * @OA\SecurityScheme(
