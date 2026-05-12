@@ -13,6 +13,29 @@ use Illuminate\Support\Facades\Auth;
 
 class CallController extends Controller
 {
+    /**
+     * @OA\Post(
+     *      path="/calls/toggle-availability",
+     *      summary="Toggle agent availability status",
+     *      tags={"Telephony"},
+     *      security={{"bearerAuth": {}}},
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="string", enum={"available", "away", "offline"}, example="available")
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Status updated successfully",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="string", example="available"),
+     *              @OA\Property(property="message", type="string", example="Status updated to available")
+     *          )
+     *      ),
+     *      @OA\Response(response=404, description="Employee record not found")
+     * )
+     */
     public function toggleAvailability(Request $request)
     {
         $user = Auth::user();
@@ -35,6 +58,30 @@ class CallController extends Controller
         ]);
     }
 
+    /**
+     * @OA\Get(
+     *      path="/calls/agent-status",
+     *      summary="Get current agent status and Exotel configuration",
+     *      tags={"Telephony"},
+     *      security={{"bearerAuth": {}}},
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="status", type="string", example="available"),
+     *              @OA\Property(property="exotel_config", type="object",
+     *                  @OA\Property(property="apiKey", type="string"),
+     *                  @OA\Property(property="accountSid", type="string"),
+     *                  @OA\Property(property="subdomain", type="string"),
+     *                  @OA\Property(property="token", type="string"),
+     *                  @OA\Property(property="agentId", type="string"),
+     *                  @OA\Property(property="appId", type="string")
+     *              )
+     *          )
+     *      ),
+     *      @OA\Response(response=404, description="Employee record not found")
+     * )
+     */
     public function getAgentStatus()
     {
         $employee = Auth::user()->employee;
@@ -139,6 +186,32 @@ class CallController extends Controller
         ]);
     }
 
+    /**
+     * @OA\Post(
+     *      path="/calls/start-outbound",
+     *      summary="Initiate an outbound PSTN call via Exotel",
+     *      tags={"Telephony"},
+     *      security={{"bearerAuth": {}}},
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *              @OA\Property(property="phone_number", type="string", example="+919876543210"),
+     *              @OA\Property(property="lead_id", type="integer", example=1)
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Call initiated successfully",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Call initiated"),
+     *              @OA\Property(property="call_id", type="integer", example=123),
+     *              @OA\Property(property="exotel_response", type="object")
+     *          )
+     *      ),
+     *      @OA\Response(response=422, description="Validation error or missing mobile number"),
+     *      @OA\Response(response=500, description="Exotel API failure")
+     * )
+     */
     public function startOutboundCall(Request $request)
     {
         $request->validate([
@@ -206,6 +279,24 @@ class CallController extends Controller
         ]);
     }
 
+    /**
+     * @OA\Post(
+     *      path="/exotel/callback",
+     *      summary="Webhook for Exotel call status updates",
+     *      tags={"Telephony Webhooks"},
+     *      @OA\RequestBody(
+     *          @OA\MediaType(
+     *              mediaType="application/x-www-form-urlencoded",
+     *              @OA\Schema(
+     *                  @OA\Property(property="CallSid", type="string"),
+     *                  @OA\Property(property="Status", type="string"),
+     *                  @OA\Property(property="RecordingUrl", type="string")
+     *              )
+     *          )
+     *      ),
+     *      @OA\Response(response=200, description="OK")
+     * )
+     */
     public function handleExotelCallback(Request $request)
     {
         \Illuminate\Support\Facades\Log::info('Exotel Callback Received', $request->all());
