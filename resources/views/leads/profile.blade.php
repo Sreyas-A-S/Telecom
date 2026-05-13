@@ -145,7 +145,7 @@
                                             <span class="info-label">Phone</span>
                                             <div class="d-flex align-items-center gap-2">
                                                 <span class="info-value" id="profilePhone"></span>
-                                                <button id="profileCallBtn" class="btn btn-success btn-xs px-2 py-1" style="display:none;" onclick="window.exotelService.dialLead($('#profilePhone').text(), leadId)">
+                                                <button id="profileCallBtn" class="btn btn-success btn-xs px-2 py-1" style="display:none;" onclick="window.telephonyService.dialLead($('#profilePhone').text(), leadId)">
                                                     <i class="fa fa-phone"></i> Call
                                                 </button>
                                             </div>

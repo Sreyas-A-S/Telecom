@@ -44,4 +44,26 @@ return [
         'virtual_number' => env('EXOTEL_VIRTUAL_NUMBER'),
     ],
 
+    'plivo' => [
+        'auth_id' => env('PLIVO_AUTH_ID'),
+        'auth_token' => env('PLIVO_AUTH_TOKEN'),
+        'virtual_number' => env('PLIVO_VIRTUAL_NUMBER'),
+    ],
+
+    'callhippo' => [
+        'api_token' => env('CALLHIPPO_API_TOKEN'),
+        'email' => env('CALLHIPPO_EMAIL'),
+        'virtual_number' => env('CALLHIPPO_VIRTUAL_NUMBER'),
+    ],
+
+    'telecmi' => [
+        'token' => env('TELECMI_TOKEN'),
+        'virtual_number' => env('TELECMI_VIRTUAL_NUMBER'),
+    ],
+
+    'myoperator' => [
+        'token' => env('MYOPERATOR_TOKEN'),
+        'company_number' => env('MYOPERATOR_COMPANY_NUMBER'),
+    ],
+
 ];

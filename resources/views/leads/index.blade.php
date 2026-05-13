@@ -1694,7 +1694,7 @@
                         searchable: false,
                         render: function(data, type, row) {
                             var phoneNumber = row.name ? row.name.phone_number : '';
-                            var callBtn = '<a href="javascript:void(0)" title="Call Lead" onclick="window.exotelService.dialLead(\'' + phoneNumber + '\', ' + row.id + ')"><i class="fa fa-phone text-success"></i></a>';
+                            var callBtn = '<a href="javascript:void(0)" title="Call Lead" onclick="window.telephonyService.dialLead(\'' + phoneNumber + '\', ' + row.id + ')"><i class="fa fa-phone text-success"></i></a>';
                             
                             var viewBtn = '<a class="" title="View" href="/leads/' + row
                                 .id +
@@ -1932,7 +1932,7 @@
                         searchable: false,
                         render: function(data, type, row) {
                             var phoneNumber = (row.name && row.name.phone_number) ? row.name.phone_number : (row.phone_number || '');
-                            var callBtn = '<a href="javascript:void(0)" title="Call Lead" onclick="window.exotelService.dialLead(\'' + phoneNumber + '\', ' + row.id + ')"><i class="fa fa-phone text-success"></i></a>';
+                            var callBtn = '<a href="javascript:void(0)" title="Call Lead" onclick="window.telephonyService.dialLead(\'' + phoneNumber + '\', ' + row.id + ')"><i class="fa fa-phone text-success"></i></a>';
 
                             var viewBtn = '<a class="" title="View" href="/leads/' + row
                                 .id +

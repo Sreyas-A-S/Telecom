@@ -551,6 +551,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/calls/agent-status', [CallController::class, 'getAgentStatus'])->name('calls.agent-status');
     Route::post('/calls/initiate-mock', [CallController::class, 'initiateIncomingCall'])->name('calls.initiate-mock');
     Route::post('/calls/start-outbound', [CallController::class, 'startOutboundCall'])->name('calls.start-outbound');
+    Route::get('/calls/check-incoming', [CallController::class, 'checkIncoming'])->name('calls.check-incoming');
     Route::post('/calls/{call}/answer', [CallController::class, 'answerCall'])->name('calls.answer');
     Route::post('/calls/{call}/end', [CallController::class, 'endCall'])->name('calls.end');
     Route::get('/calls/console', [CallController::class, 'console'])->name('calls.console');
@@ -620,3 +621,8 @@ Route::get('/l5-swagger/generate', function () {
 });
 
 Route::post('/exotel/callback', [CallController::class, 'handleExotelCallback'])->name('api.exotel.callback');
+Route::get('/plivo/answer', [CallController::class, 'handlePlivoAnswer'])->name('api.plivo.answer');
+Route::post('/plivo/callback', [CallController::class, 'handlePlivoCallback'])->name('api.plivo.callback');
+Route::post('/callhippo/callback', [CallController::class, 'handleCallHippoCallback'])->name('api.callhippo.callback');
+Route::post('/telecmi/callback', [CallController::class, 'handleTeleCMICallback'])->name('api.telecmi.callback');
+Route::post('/myoperator/callback', [CallController::class, 'handleMyOperatorCallback'])->name('api.myoperator.callback');

@@ -518,7 +518,7 @@
                 <p class="f-20 mb-4" id="caller-number">Unknown Number</p>
                 
                 <div class="d-flex justify-content-center gap-4">
-                    <button class="btn btn-success btn-lg rounded-circle p-4" onclick="window.exotelService.answerCall()">
+                    <button class="btn btn-success btn-lg rounded-circle p-4" onclick="window.telephonyService.answerCall()">
                         <i class="fa fa-phone fa-2x"></i>
                     </button>
                     <button class="btn btn-danger btn-lg rounded-circle p-4" onclick="window.exotelService.endCall()">
@@ -535,12 +535,49 @@
     <div class="d-flex align-items-center gap-4 bg-dark text-white px-4 py-3 rounded-pill shadow-lg border border-secondary">
         <div class="d-flex align-items-center gap-2">
             <span class="rounded-circle bg-success pulse-animation" style="width: 10px; height: 10px;"></span>
-            <span class="f-w-600">On Call: <span id="active-call-number">...</span></span>
+            <span class="f-w-600"><span id="active-call-channel">Exotel</span>: <span id="active-call-number">...</span></span>
         </div>
         <div class="divider bg-secondary" style="width: 1px; height: 20px;"></div>
-        <button class="btn btn-danger btn-xs rounded-pill px-3" onclick="window.exotelService.endCall()">
+        <button class="btn btn-danger btn-xs rounded-pill px-3" onclick="window.telephonyService.endCall()">
             <i class="fa fa-phone fa-rotate-135 me-2"></i> End Call
         </button>
+    </div>
+</div>
+
+<!-- Channel Selector Modal -->
+<div class="modal fade" id="channelSelectorModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 15px;">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title f-w-700">Choose Channel</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center p-4">
+                <p class="text-muted mb-4">Call <span id="selector-phone-number" class="f-w-600 text-dark"></span> via:</p>
+                <div class="d-grid gap-3">
+                    <button class="btn btn-primary btn-lg d-flex align-items-center justify-content-between px-4" onclick="window.telephonyService.initiateCall('exotel')" style="border-radius: 12px; height: 60px;">
+                        <span><i class="fa fa-phone me-2"></i> Exotel</span>
+                        <i class="fa fa-chevron-right f-12 opacity-50"></i>
+                    </button>
+                    <button class="btn btn-success btn-lg d-flex align-items-center justify-content-between px-4" onclick="window.telephonyService.initiateCall('plivo')" style="border-radius: 12px; height: 60px; background-color: #28a745; border-color: #28a745;">
+                        <span><i class="fa fa-phone me-2"></i> Plivo</span>
+                        <i class="fa fa-chevron-right f-12 opacity-50"></i>
+                    </button>
+                    <button class="btn btn-info btn-lg d-flex align-items-center justify-content-between px-4 text-white" onclick="window.telephonyService.initiateCall('callhippo')" style="border-radius: 12px; height: 60px; background-color: #0dcaf0; border-color: #0dcaf0;">
+                        <span><i class="fa fa-phone me-2"></i> CallHippo</span>
+                        <i class="fa fa-chevron-right f-12 opacity-50"></i>
+                    </button>
+                    <button class="btn btn-warning btn-lg d-flex align-items-center justify-content-between px-4 text-white" onclick="window.telephonyService.initiateCall('telecmi')" style="border-radius: 12px; height: 60px; background-color: #ffc107; border-color: #ffc107;">
+                        <span><i class="fa fa-phone me-2"></i> TeleCMI</span>
+                        <i class="fa fa-chevron-right f-12 opacity-50"></i>
+                    </button>
+                    <button class="btn btn-primary btn-lg d-flex align-items-center justify-content-between px-4" onclick="window.telephonyService.initiateCall('myoperator')" style="border-radius: 12px; height: 60px; background-color: #5544ff; border-color: #5544ff;">
+                        <span><i class="fa fa-phone me-2"></i> MyOperator</span>
+                        <i class="fa fa-chevron-right f-12 opacity-50"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -607,6 +644,7 @@
 </style>
 <script src="{{ asset('admin/assets/js/exotelsdk.js') }}"></script>
 <script src="{{ asset('admin/assets/js/exotel-service.js') }}"></script>
+<script src="{{ asset('admin/assets/js/telephony-service.js') }}"></script>
 
 <!-- Realtime Subscriptions -->
 <script src="https://js.pusher.com/8.0.1/pusher.min.js"></script>
@@ -641,6 +679,15 @@
                     if (e.employeeId == currentEmployeeId && window.exotelService) {
                         window.exotelService.status = e.status;
                         window.exotelService.updateUIStatus(e.status);
+                    }
+                });
+
+            // Listen for call ended events
+            window.Echo.channel('calls')
+                .listen('CallEnded', (e) => {
+                    console.log('Realtime Call Ended received:', e);
+                    if (window.telephonyService) {
+                        window.telephonyService.closeActiveCallUI();
                     }
                 });
         }

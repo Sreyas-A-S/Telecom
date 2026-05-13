@@ -16,6 +16,8 @@ class Call extends Model
         'end_time',
         'recording_url',
         'call_sid',
+        'channel',
+        'lead_id',
     ];
 
     protected $casts = [
